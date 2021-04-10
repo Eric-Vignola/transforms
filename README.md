@@ -55,7 +55,7 @@ vectorNormalize,
 vectorSlerp, 
 vectorToEuler, 
 vectorToMatrix, 
-vectorToQuaternion, 
+vectorToQuaternion
 
 ## License
 BSD 3-Clause License:

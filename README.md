@@ -3,12 +3,36 @@ A Numeric Transform operations toolset
 
 ## About
 This module provides a toolset to do fast matrix/quaternion/vector operations.
+For practical reasons, most functions are written to accept asymmetrical inputs,
+meaning that calculations will be made element wise even if array sizes differ,
+and reuse the last entry of the smallest input to complete the calculation.
 
 ## Requirements
 Numpy, Scipy and Numba python modules.
 
-## Authors
+## Author
 * **Eric Vignola** (eric.vignola@gmail.com)
+
+## Example
+```
+import numpy as np
+import transforms
+
+# declare two arrays of 10 million vectors
+V0 = np.random.random((10**7,3))
+V1 = np.random.random((10**7,3))
+
+# slerp 10 million vectors 1:1 element wise, half way
+slerp = transforms.vectorSlerp(V0, V1, 0.5) # 0.886 seconds
+
+# slerp 10 million vectors to a common vector, half way
+slerp = transforms.vectorSlerp(V0, V1[0], 0.5) #0.813 seconds
+
+# slerp 10 million vectors 1:1 element wise, with a random ratio for each
+blend = np.random.random(10**7)
+slerp = transforms.vectorSlerp(V0, V1, blend) #0.956 seconds
+```
+
 
 ## Supported Functions
 axisAngleToEuler, 

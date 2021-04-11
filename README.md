@@ -35,51 +35,25 @@ slerp = transforms.vectorSlerp(V0, V1, blend) #0.956 seconds
 
 
 ## Supported Functions
-axisAngleToEuler, 
-axisAngleToMatrix, 
-axisAngleToQuaternion, 
-eulerSlerp, 
-eulerToEuler, 
-eulerToMatrix, 
-eulerToQuaternion, 
-matrixIdentity, 
-matrixInterpolate, 
-matrixInverse, 
-matrixLocal, 
-matrixMultiply, 
-matrixNormalize, 
-matrixPointMultiply, 
-matrixSlerp, 
-matrixToEuler, 
-matrixToQuaternion, 
-quaternionAdd, 
-quaternionConjugate, 
-quaternionDot, 
-quaternionInverse, 
-quaternionMultiply, 
-quaternionNegate, 
-quaternionNormalize, 
-quaternionSlerp, 
-quaternionSub, 
-quaternionToEuler, 
-quaternionToMatrix, 
-randomAngle, 
-randomEuler, 
-randomMatrix, 
-randomQuaternion, 
-randomVector, 
-vectorArcToEuler, 
-vectorArcToMatrix, 
-vectorArcToQuaternion, 
-vectorCross, 
-vectorDot, 
-vectorLerp, 
-vectorMagnitude, 
-vectorNormalize, 
-vectorSlerp, 
-vectorToEuler, 
-vectorToMatrix, 
-vectorToQuaternion
+```
+axisAngleToEuler       quaternionAdd        vectorArcToEuler
+axisAngleToMatrix      quaternionConjugate  vectorArcToMatrix
+axisAngleToQuaternion  quaternionDot        vectorArcToQuaternion
+eulerSlerp             quaternionInverse    vectorCross
+eulerToEuler           quaternionMultiply   vectorDot
+eulerToMatrix          quaternionNegate     vectorLerp
+eulerToQuaternion      quaternionNormalize  vectorMagnitude
+matrixIdentity         quaternionSlerp      vectorNormalize
+matrixInterpolate      quaternionSub        vectorSlerp
+matrixInverse          quaternionToEuler    vectorToEuler
+matrixLocal            quaternionToMatrix   vectorToMatrix
+matrixMultiply         randomAngle          vectorToQuaternion
+matrixNormalize        randomEuler
+matrixPointMultiply    randomMatrix
+matrixSlerp            randomQuaternion
+matrixToEuler          randomVector
+matrixToQuaternion
+```
 
 ## License
 BSD 3-Clause License:

@@ -1314,14 +1314,14 @@ def randomEuler(n, seed=None):
 def randomQuaternion(n, seed=None):
     """ Computes a list of random quaternions qi,qj,qk,qw
     """
-    return _eulerToQuaternion(randomEuler(n=n, seed=seed),np.array([0]))
+    return _eulerToQuaternion(randomEuler(n=n, seed=seed),np.array([0]).astype(np.int64))
 
 
 
 def randomMatrix(n, seed=None, random_position=False):
     """ Computes a list of random 4x4 rotation matrices
     """
-    M = _eulerToMatrix(randomEuler(n=n, seed=seed),np.array([0]))
+    M = _eulerToMatrix(randomEuler(n=n, seed=seed),np.array([0]).astype(np.int64))
     if random_position:
         M[:,3,:3] = 1 - np.random.random((n,3,))*2
 

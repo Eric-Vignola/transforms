@@ -23,14 +23,14 @@ V0 = np.random.random((10**7,3))
 V1 = np.random.random((10**7,3))
 
 # slerp 10 million vectors 1:1 element wise, half way
-slerp = transforms.vectorSlerp(V0, V1, 0.5) # 0.886 seconds
+slerp = transforms.vectorSlerp(V0, V1, 0.5)
 
 # slerp 10 million vectors to a common vector, half way
-slerp = transforms.vectorSlerp(V0, V1[0], 0.5) #0.813 seconds
+slerp = transforms.vectorSlerp(V0, V1[0], 0.5)
 
 # slerp 10 million vectors 1:1 element wise, with a random ratio for each
 blend = np.random.random(10**7)
-slerp = transforms.vectorSlerp(V0, V1, blend) #0.956 seconds
+slerp = transforms.vectorSlerp(V0, V1, blend)
 ```
 
 

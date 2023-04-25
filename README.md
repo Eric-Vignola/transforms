@@ -16,21 +16,21 @@ Numpy, Scipy and Numba python modules.
 ## Example
 ```
 import numpy as np
-import transforms
+from transforms import vector
 
 # declare two arrays of 10 million vectors
-V0 = np.random.random((10**7,3))
-V1 = np.random.random((10**7,3))
+V0 = vector.random((10**7,3))
+V1 = vector.random((10**7,3))
 
 # slerp 10 million vectors 1:1 element wise, half way
-slerp = transforms.vectorSlerp(V0, V1, 0.5)
+slerp = vector.slerp(V0, V1, 0.5)
 
 # slerp 10 million vectors to a common vector, half way
-slerp = transforms.vectorSlerp(V0, V1[0], 0.5)
+slerp = vector.slerp(V0, V1[0], 0.5)
 
 # slerp 10 million vectors 1:1 element wise, with a random ratio for each
 blend = np.random.random(10**7)
-slerp = transforms.vectorSlerp(V0, V1, blend)
+slerp = vector.slerp(V0, V1, blend)
 ```
 
 
@@ -57,7 +57,7 @@ matrixToQuaternion
 
 ## License
 BSD 3-Clause License:
-Copyright (c)  2020, Eric Vignola 
+Copyright (c)  2023, Eric Vignola 
 All rights reserved. 
 
 Redistribution and use in source and binary forms, with or without 

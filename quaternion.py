@@ -1,15 +1,13 @@
 import numpy as np
-from numpy.core.umath_tests import inner1d
 
-from ._transforms import _axisAngleToMatrix, _axisAngleToQuaternion, _eulerToMatrix, _eulerToQuaternion
-from ._transforms import _matrixIdentity, _matrixInverse, _matrixMultiply, _matrixNormalize
-from ._transforms import _matrixPointMultiply, _matrixToEuler, _matrixToQuaternion, _quaternionAdd
-from ._transforms import _quaternionConjugate, _quaternionInverse, _quaternionMultiply, _quaternionNegate
-from ._transforms import _quaternionSlerp, _quaternionSub, _quaternionToMatrix, _vectorArcToQuaternion
-from ._transforms import _vectorCross, _vectorDot, _vectorLerp, _vectorMagnitude, _vectorNormalize
-from ._transforms import _vectorSlerp, _vectorToMatrix
+from ._transforms import _eulerToQuaternion, _matrixToEuler, _quaternionAdd
+from ._transforms import _quaternionConjugate, _quaternionInverse, _quaternionMultiply
+from ._transforms import _quaternionNegate, _quaternionSlerp, _quaternionSub
+from ._transforms import _quaternionToMatrix, _vectorDot, _vectorNormalize
 
 from .euler import random as randomEuler
+
+from ._utils import _setDimension, _matchDepth
 
 
 # axes as mapped by Maya's rotate order indices
@@ -24,40 +22,6 @@ ZYX = 5
 X = 0
 Y = 1
 Z = 2
-
-
-#----------------------------------------------- UTILS -----------------------------------------------#
-
-def _setDimension(data, ndim=1, dtype=np.float64, reshape_matrix=False):
-    """ Sets input data to expected dimension
-    """
-    data = np.asarray(data, dtype=dtype)
-    
-    while data.ndim < ndim:
-        data = data[np.newaxis]
-        
-    # For when matrices are given as lists of 16 floats
-    if reshape_matrix:
-        if data.shape[-1] == 16:
-            data = data.reshape(-1,4,4)
-
-    return data
-
-
-def _matchDepth(*data):
-    """ Sets given data to the highest dimention.
-        It is assumed all entries are already arrays
-    """
-    count   = [len(d) for d in data]
-    highest = max(count)
-    matched = list(data)
-    
-    for i in range(len(count)):
-        if count[i] > 0:
-            matched[i] = np.concatenate((data[i],) + (np.repeat([data[i][-1]],highest-count[i],axis=0),))
-        
-    return matched
-
 
 
 

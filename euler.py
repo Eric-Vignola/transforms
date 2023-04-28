@@ -1,13 +1,8 @@
 import numpy as np
 
-from ._transforms import _axisAngleToMatrix, _axisAngleToQuaternion, _eulerToMatrix, _eulerToQuaternion
-from ._transforms import _matrixIdentity, _matrixInverse, _matrixMultiply, _matrixNormalize
-from ._transforms import _matrixPointMultiply, _matrixToEuler, _matrixToQuaternion, _quaternionAdd
-from ._transforms import _quaternionConjugate, _quaternionInverse, _quaternionMultiply, _quaternionNegate
-from ._transforms import _quaternionSlerp, _quaternionSub, _quaternionToMatrix
-from ._transforms import _vectorArcToQuaternion, _vectorCross, _vectorDot, _vectorLerp, _vectorMagnitude
-from ._transforms import _vectorNormalize, _vectorSlerp, _vectorToMatrix
-
+from ._transforms import _eulerToMatrix, _eulerToQuaternion, _matrixToEuler
+from ._transforms import _quaternionSlerp, _quaternionToMatrix
+from ._utils import _setDimension, _matchDepth
 
 # axes as mapped by Maya's rotate order indices
 XYZ = 0
@@ -21,40 +16,6 @@ ZYX = 5
 X = 0
 Y = 1
 Z = 2
-
-
-#----------------------------------------------- UTILS -----------------------------------------------#
-
-def _setDimension(data, ndim=1, dtype=np.float64, reshape_matrix=False):
-    """ Sets input data to expected dimension
-    """
-    data = np.asarray(data, dtype=dtype)
-    
-    while data.ndim < ndim:
-        data = data[np.newaxis]
-        
-    # For when matrices are given as lists of 16 floats
-    if reshape_matrix:
-        if data.shape[-1] == 16:
-            data = data.reshape(-1,4,4)
-
-    return data
-
-
-def _matchDepth(*data):
-    """ Sets given data to the highest dimention.
-        It is assumed all entries are already arrays
-    """
-    count   = [len(d) for d in data]
-    highest = max(count)
-    matched = list(data)
-    
-    for i in range(len(count)):
-        if count[i] > 0:
-            matched[i] = np.concatenate((data[i],) + (np.repeat([data[i][-1]],highest-count[i],axis=0),))
-        
-    return matched
-
 
 
 
@@ -250,15 +211,15 @@ def to_euler(euler, from_axes, to_axes):
 
     """            
     
-    euler     = _setDimension(euler,2)    
-    from_axes = _setDimension(from_axes,1,dtype=np.int32)    
-    to_axes   = _setDimension(to_axes,1,dtype=np.int32)
+    euler     = _setDimension(euler,     2)    
+    from_axes = _setDimension(from_axes, 1, dtype=np.int32)    
+    to_axes   = _setDimension(to_axes,   1, dtype=np.int32)
     
     euler, from_axes, to_axes = _matchDepth(euler, from_axes, to_axes)
     
-    q = _eulerToQuaternion(euler, axes0)
-    return _quaternionToEuler(q, axes1)
-
+    Q = _eulerToQuaternion(euler, from_axes)
+    M = _quaternionToMatrix(Q)
+    return _matrixToEuler(M, to_axes)
 
 
 def random(n, seed=None):

@@ -1,14 +1,13 @@
 import numpy as np
-from numpy.core.umath_tests import inner1d
 
-from ._transforms import _axisAngleToMatrix, _axisAngleToQuaternion, _eulerToMatrix, _eulerToQuaternion
-from ._transforms import _matrixIdentity, _matrixInverse, _matrixMultiply, _matrixNormalize
-from ._transforms import _matrixPointMultiply, _matrixToEuler, _matrixToQuaternion, _quaternionAdd
-from ._transforms import _quaternionConjugate, _quaternionInverse, _quaternionMultiply, _quaternionNegate
-from ._transforms import _quaternionSlerp, _quaternionSub, _quaternionToMatrix, _vectorArcToQuaternion
+from ._transforms import _matrixToEuler, _matrixToQuaternion, _quaternionToMatrix, _vectorArcToQuaternion
 from ._transforms import _vectorCross, _vectorDot, _vectorLerp, _vectorMagnitude, _vectorNormalize
-from ._transforms import _vectorSlerp, _vectorToMatrix
+from ._transforms import _vectorSlerp, _vectorToMatrix, _vectorArc
+
 from .quaternion  import to_euler as quaternionToEuler
+
+from ._utils import _setDimension, _matchDepth
+
 
 # axes as mapped by Maya's rotate order indices
 XYZ = 0
@@ -22,39 +21,6 @@ ZYX = 5
 X = 0
 Y = 1
 Z = 2
-
-
-#----------------------------------------------- UTILS -----------------------------------------------#
-
-def _setDimension(data, ndim=1, dtype=np.float64, reshape_matrix=False):
-    """ Sets input data to expected dimension
-    """
-    data = np.asarray(data, dtype=dtype)
-    
-    while data.ndim < ndim:
-        data = data[np.newaxis]
-        
-    # For when matrices are given as lists of 16 floats
-    if reshape_matrix:
-        if data.shape[-1] == 16:
-            data = data.reshape(-1,4,4)
-
-    return data
-
-
-def _matchDepth(*data):
-    """ Sets given data to the highest dimention.
-        It is assumed all entries are already arrays
-    """
-    count   = [len(d) for d in data]
-    highest = max(count)
-    matched = list(data)
-    
-    for i in range(len(count)):
-        if count[i] > 0:
-            matched[i] = np.concatenate((data[i],) + (np.repeat([data[i][-1]],highest-count[i],axis=0),))
-        
-    return matched
 
 
 #----------------------------------------------- VECTOR MATH -----------------------------------------------#
@@ -110,13 +76,13 @@ def to_matrix(vector0, vector1, aim_axis=0, up_axis=1, extrapolate=False):
     
     vector0, vector1, aim_axis, up_axis = _matchDepth(vector0, vector1, aim_axis, up_axis)
     
-    return _vectorToMatrix(vector0, vector1, aim_axis, up_axis, extrapolate)
+    return _vectorToMatrix(vector0, vector1, aim_axis, up_axis)
 
 
-def to_quaternion(vector0, vector1, aim_axis=X, up_axis=Y, extrapolate=False):
+def to_quaternion(vector0, vector1, aim_axis=X, up_axis=Y):
     
     """
-    to_quaternion(vector0, vector1, aim_axis=0, up_axis=1, extrapolate=False)
+    to_quaternion(vector0, vector1, aim_axis=0, up_axis=1)
     
         Converts an array of aim (vector0) and up (vector1) vectors to quaternions qi,qj,qk,qw.
 
@@ -164,7 +130,7 @@ def to_quaternion(vector0, vector1, aim_axis=X, up_axis=Y, extrapolate=False):
     
     vector0, vector1, aim_axis, up_axis = _matchDepth(vector0, vector1, aim_axis, up_axis)
     
-    M = _vectorToMatrix(vector0, vector1, aim_axis, up_axis, extrapolate)
+    M = _vectorToMatrix(vector0, vector1, aim_axis, up_axis)
     return _matrixToQuaternion(M)
 
 
@@ -222,7 +188,7 @@ def to_euler(vector0, vector1, aim_axis=0, up_axis=1, axes=XYZ, extrapolate=Fals
     
     vector0, vector1, aim_axis, up_axis, axes = _matchDepth(vector0, vector1, aim_axis, up_axis, axes)
     
-    return _matrixToEuler(_vectorToMatrix(vector0, vector1, aim_axis, up_axis, extrapolate), axes)
+    return _matrixToEuler(_vectorToMatrix(vector0, vector1, aim_axis, up_axis), axes)
 
 
 
@@ -433,10 +399,58 @@ def slerp(vector0, vector1, weight=0.5):
     return _vectorSlerp(vector0,vector1,weight)
 
 
-
-def lerp(vector0, vector1, weight=0.5, method='linear', power=1., inverse=0.):
+def slerp2(vector0, vector1, weight=0.5):
     """
-    lerp(vector0, vector1, weight=0.5, method='linear')
+    slerp(vector0, vector1, weight=0.5)
+    
+        Spherical interpolation between 2 lists of vectors
+
+        Parameters
+        ----------
+        vector0 : *[float, float, float]* or *[[float, float, float],...]*
+                  a single, or list of vectors
+        
+        vector1 : *[float, float, float]* or *[[float, float, float],...]*
+                  a single, or list of vectors
+            
+        weight  : *[float,...]* or *float*
+                  a single, or list of interpolation weights (default=0.5)
+
+            
+        Returns
+        -------
+        vector: np.array(n,3) 
+                a list of spherically interpolated vectors
+            
+
+        See Also
+        --------
+        lerp: Linear interpolation between 2 lists of vectors.
+        
+        
+        Examples
+        --------
+        >>> vector0 = random(100)                         # random vector array
+        >>> vector1 = random.random(100)                  # random float weight array
+        >>> print (slerp(vector0, vector1, weight))       # slerp 2 lists of vectors by list of floats
+        >>> print (slerp(vector0, vector1, weight[0]))    # slerp 2 lists of vectors by same weight value
+        >>> print (slerp(vector0[0], vector1[0], weight)) # slerp 2 vectors by list of weights
+        """     
+    
+    vector0 = _setDimension(vector0,2)
+    vector1 = _setDimension(vector1,2)
+    weight  = _setDimension(weight,1)
+    
+    vector0, vector1, weight = _matchDepth(vector0, vector1, weight)
+    
+    return _vectorSlerp2(vector0,vector1,weight)
+
+
+
+
+def lerp(vector0, vector1, weight=0.5):
+    """
+    lerp(vector0, vector1, weight=0.5)
     
         Linear interpolation between 2 lists of vectors
 
@@ -451,19 +465,7 @@ def lerp(vector0, vector1, weight=0.5, method='linear', power=1., inverse=0.):
         weight  : *[float,...]* or *float*
                   a single, or list of interpolation weights (default=0.5)
             
-        method  : 'linear', 'multiplied' or 'cosine'
-                  linear, multiplied or sine interpolation
-                  multiplied is generally used for scale interpolation.
-                  cosine is used to ease in and out.
-            
-        power   : when using the 'multiplied' method, this value is used to
-                  modulate the weights
-            
-        inverse : when using the 'multiplied' method, this value is used to
-                  blend between regular and inversed exponent flows
-            
-
-
+        
         Returns
         -------
         vector: np.array(n,3) 
@@ -491,21 +493,7 @@ def lerp(vector0, vector1, weight=0.5, method='linear', power=1., inverse=0.):
     
     vector0, vector1, weight = _matchDepth(vector0, vector1, weight)
     
-    method = {'linear':0, 'multiplied':1, 'cosine':2}[method]
-    if method == 2:
-        method = 0
-        t = np.where((weight>0.) & (weight<1.))[0]
-        if weight.size:
-            weight[t] = np.radians(weight[t]*180)
-            weight[t] = 1-(np.cos(weight[t])+1)/2  
-    
-    
-    elif method == 1:
-        w0 = weight**abs(power)        # normal weight flow 
-        w1 = 1-w0[::-1]                # reversed weight flow
-        weight  = w0 + inverse*(w1-w0) # lerp between flows
-        
-    return np.nan_to_num(_vectorLerp(vector0, vector1, weight, method))
+    return np.nan_to_num(_vectorLerp(vector0, vector1, weight))
 
 
 
@@ -649,12 +637,49 @@ def arc_to_euler(vector0, vector1, axes=XYZ):
 
 
 
+def angle(vector0, vector1):
+    """
+    angle(vector0, vector1, axes=XYZ)
+    
+        Computes the arc angle between 2 lists of vectors.
+
+        Parameters
+        ----------
+        vector0 : *[float, float, float]* or *[[float, float, float],...]*
+            a single, or list of vectors
+        
+        vector1 : *[float, float, float]* or *[[float, float, float],...]*
+            a single, or list of vectors
+
+            
+        Returns
+        -------
+        angle: np.array(n)
+            a list of angles in radians
+            
+            
+        Examples
+        --------
+        >>> vector0 = random(100)              # random vector array
+        >>> vector1 = random(100)              # random vector array
+        >>> print (angle(vector0, vector1)     # arc angle between 2 lists of vectors
+        >>> print (angle(vector0, vector1[0])) # arc angle between a list of vectors and a single vector
+        """
+    
+    vector0 = _setDimension(vector0,2)
+    vector1 = _setDimension(vector1,2)
+    
+    return _vectorArc(vector0, vector1)
+
+
 def random(n, seed=None, normalize=False):
     """ Computes a list of random vectors
     """
-    np.random.seed(seed)
+    if not seed is None:
+        np.random.seed(seed)
+        
     if normalize:
         return _vectorNormalize(1 - np.random.random((n,3,))*2)
     
-    return 1 - np.random.random((n,3,))*2
+    return 1 - np.random.random((n,3)) * 2
         

@@ -1,9 +1,9 @@
 import numpy as np
-from numba import njit, float64, int32, intp, prange
-from numba.types import UniTuple, Tuple
-from numba.pycc import CC
+from numba import njit, prange #, float64, int32, intp
+#from numba.types import UniTuple, Tuple
+#from numba.pycc import CC
 
-from math import acos, sin, cos, atan, pi, atan2
+from math import acos, sin, cos, atan2
 
 
 #cc = CC('_transforms')
@@ -395,9 +395,9 @@ def _matrixPointMultiply(point,matrix):
 
 #@cc.export('_vectorSlerp','float64[:,:](float64[:,:],float64[:,:],float64[:])')
 @njit(fastmath=True, parallel=True)
-def _vectorSlerp(vector0,vector1,weight):
-
-    v = np.empty((vector0.shape[0],3))
+def _vectorArc(vector0, vector1):
+    
+    angle = np.empty(vector0.shape[0])
     vector0_ = np.empty(3)
     vector1_ = np.empty(3)
 
@@ -413,11 +413,46 @@ def _vectorSlerp(vector0,vector1,weight):
             vector1_[0] = vector1[i,0] / m
             vector1_[1] = vector1[i,1] / m
             vector1_[2] = vector1[i,2] / m
+            
+        dot = (vector0_[0]*vector1_[0]) + (vector0_[1]*vector1_[1]) + (vector0_[2]*vector1_[2])
+        if dot > 1.0:
+            dot = 1.0
+        elif dot < -1.0:
+            dot = -1.0
+            
+        angle[i] = acos(dot)
 
-        angle  = acos((vector0_[0]*vector1_[0]) + (vector0_[1]*vector1_[1]) + (vector0_[2]*vector1_[2]))
+    return angle
+
+
+#@cc.export('_vectorSlerp','float64[:,:](float64[:,:],float64[:,:],float64[:])')
+@njit(fastmath=True, parallel=True)
+def _vectorSlerp(vector0, vector1, weight):
+    np.empty(vector0.shape[0]) # TODO: WTF? parallel njit fails nopython pipeline without this line???
+    v = np.empty((vector0.shape[0],3))
+
+    for i in prange(vector0.shape[0]):
+        X0, Y0, Z0 = 0., 0., 0.
+        X1, Y1, Z1 = 0., 0., 0.
+        
+        m = (vector0[i,0]**2.0 + vector0[i,1]**2.0 + vector0[i,2]**2) ** 0.5
+        if m > 0.:
+            X0 = vector0[i,0] / m
+            Y0 = vector0[i,1] / m
+            Z0 = vector0[i,2] / m
+
+        m = (vector1[i,0]**2.0 + vector1[i,1]**2.0 + vector1[i,2]**2.0) ** 0.5
+        if m > 0.:
+            X1 = vector1[i,0] / m
+            Y1 = vector1[i,1] / m
+            Z1 = vector1[i,2] / m
+
+        dot = (X0*X1) + (Y0*Y1) + (Z0*Z1)
+        angle  = acos(dot)
         sangle = sin(angle)
+
         if sangle > 0.:
-            w0 = sin((1-weight[i]) * angle)
+            w0 = sin((1.0-weight[i]) * angle)
             w1 = sin(weight[i] * angle)
 
             v[i,0] = (vector0[i,0] * w0 + vector1[i,0] * w1) / sangle
@@ -427,39 +462,28 @@ def _vectorSlerp(vector0,vector1,weight):
             v[i,0] = vector0[i,0]
             v[i,1] = vector0[i,1]
             v[i,2] = vector0[i,2]
-
+    
     return v
 
 
-
-#@cc.export('_vectorLerp','float64[:,:](float64[:,:],float64[:,:],float64[:],intp)')
+#@cc.export('_vectorLerp','float64[:,:](float64[:,:],float64[:,:],float64[:])')
 @njit(fastmath=True, parallel=True)
-def _vectorLerp(vector0, vector1, weight, method):
-
-    # method 0 = linear
-    # method 1 = pow multiply (used for scale)
+def _vectorLerp(vector0, vector1, weight):
 
     v = np.empty((vector0.shape[0],vector0.shape[1]))
     
-    if method == 0:
-        for i in prange(vector0.shape[0]):
-            for j in range(vector0.shape[1]):
-                v[i,j] = vector0[i,j] + weight[i] * (vector1[i,j] - vector0[i,j])
-
-
-    else:
-        for i in prange(vector0.shape[0]):
-            for j in range(vector0.shape[1]):
-                v[i,j] = vector1[i,j]**weight[i] * vector0[i,j]**(1-weight[i])
+    for i in prange(vector0.shape[0]):
+        for j in range(vector0.shape[1]):
+            v[i,j] = vector0[i,j] + weight[i] * (vector1[i,j] - vector0[i,j])
 
     return v
 
 
 
 
-#@cc.export('_vectorToMatrix','float64[:,:,:](float64[:,:], float64[:,:], int32[:], int32[:], intp)')
+#@cc.export('_vectorToMatrix','float64[:,:,:](float64[:,:], float64[:,:], int32[:], int32[:])')
 @njit(fastmath=True, parallel=True)
-def _vectorToMatrix(vector0, vector1, aim_axis, up_axis, extrapolate):
+def _vectorToMatrix(vector0, vector1, aim_axis, up_axis):
 
     vector0_ = np.empty(3)
     vector1_ = np.empty(3)
@@ -482,16 +506,6 @@ def _vectorToMatrix(vector0, vector1, aim_axis, up_axis, extrapolate):
         for j in range(3):
             vector0_[j] = vector0[i,j]
             vector1_[j] = vector1[i,j]
-
-        if extrapolate and i > 0:
-            if i > i:
-                for j in range(3):
-                    vector1_[j] = matrix[i-1,jj,j] # up vector = last up vector in matrix
-
-            elif i < i:
-                for j in range(3):
-                    vector0_[j] = matrix[i-1,ii,j]  # aim vector = last up vector in matrix
-
 
         # init matrix output
         matrix[i,0,0] = 1.
@@ -544,9 +558,9 @@ def _vectorToMatrix(vector0, vector1, aim_axis, up_axis, extrapolate):
 
 
 #@cc.export('_vectorCross','float64[:,:](float64[:,:], float64[:,:])')
-@njit(fastmath=True, parallel=True)
+@njit('float64[:,:](float64[:,:], float64[:,:])', fastmath=True, parallel=True)
 def _vectorCross(vector0, vector1):
-    vector = np.empty((vector0.shape[0],3))
+    vector = np.zeros((vector0.shape[0],3), dtype=np.float64)
 
     for i in prange(vector0.shape[0]):
         vector[i,0] = vector0[i, 1] * vector1[i, 2] - vector0[i, 2] * vector1[i, 1]

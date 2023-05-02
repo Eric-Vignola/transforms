@@ -228,7 +228,7 @@ def local(matrix, parent_matrix):
     matrix        = _setDimension(matrix, 3, reshape_matrix=True)
     parent_matrix = _setDimension(parent_matrix, 3, reshape_matrix=True)
     
-    matrix0, parent_matrix = _matchDepth(matrix0, parent_matrix)
+    matrix, parent_matrix = _matchDepth(matrix, parent_matrix)
 
     return _matrixMultiply(matrix, _matrixInverse(parent_matrix))
 

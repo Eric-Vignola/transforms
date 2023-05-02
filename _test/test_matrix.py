@@ -109,10 +109,16 @@ class TestMatrix(unittest.TestCase):
         
     def testLocal(self):
         M = matrix.random(10**6)
-        I = matrix.inverse(M)
+        M[:, 3, :3] = np.random.random((10**6, 3))
         
-        test = matrix.multiply(M, I)
-        self.assertEqual(np.allclose(test, matrix.identity(10**6)), True)        
+        P = matrix.identity(10**6)
+        P[:, 3, :3] = np.random.random((10**6, 3))
+        
+        L = matrix.local(M, P)
+        
+        delta = M[:, 3, :3] - P[:, 3, :3] 
+
+        self.assertEqual(np.allclose(L[:, 3, :3], delta), True)        
                 
                 
     def testMultiply(self):

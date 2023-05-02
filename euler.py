@@ -159,7 +159,7 @@ def slerp(euler0, euler1, weight=0.5, axes0=XYZ, axes1=XYZ, axes=XYZ):
     
     euler0 = _setDimension(euler0,2)
     euler1 = _setDimension(euler1,2)
-    weight = _setDimension(weight,2)
+    weight = _setDimension(weight,1)
     
     axes0  = _setDimension(axes0,1,dtype=np.int32)    
     axes1  = _setDimension(axes1,1,dtype=np.int32)    
@@ -217,9 +217,8 @@ def to_euler(euler, from_axes, to_axes):
     
     euler, from_axes, to_axes = _matchDepth(euler, from_axes, to_axes)
     
-    Q = _eulerToQuaternion(euler, from_axes)
-    M = _quaternionToMatrix(Q)
-    return _matrixToEuler(M, to_axes)
+    M = _eulerToMatrix(euler, from_axes)
+    return _matrixToEuler(M, to_axes)    
 
 
 def random(n, seed=None):

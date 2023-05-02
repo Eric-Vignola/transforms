@@ -40,9 +40,10 @@ def _eulerToMatrix(euler, axes):
     """ Converts Maya euler angles to 4x4 matrices
     """
     matrix = np.empty((euler.shape[0],4,4))
-    ea_ = np.empty(3)
-
+    
     for ii in prange(euler.shape[0]):
+        ea_ = np.empty(3)
+        
         ea_[0], ea_[1], ea_[2] = euler[ii,0], euler[ii,1], euler[ii,2]
         ea_[0], ea_[1], ea_[2] = ea_[MAYA_EA[axes[ii],0]], ea_[MAYA_EA[axes[ii],1]], ea_[MAYA_EA[axes[ii],2]]
 
@@ -103,9 +104,10 @@ def _eulerToQuaternion(euler, axes):
     """ Converts list of Maya euler angles to quaternions qi,qj,qk,qw
     """
     quat = np.empty((euler.shape[0],4))
-    ea_ = np.empty(3)
 
     for ii in prange(euler.shape[0]):
+        ea_ = np.empty(3)
+        
         ea_[0], ea_[1], ea_[2] = euler[ii,0], euler[ii,1], euler[ii,2]
         ea_[0], ea_[1], ea_[2] = ea_[MAYA_EA[axes[ii],0]], ea_[MAYA_EA[axes[ii],1]], ea_[MAYA_EA[axes[ii],2]]
 
@@ -166,9 +168,9 @@ def _matrixToEuler(matrix, axes):
     """ Converts list of 4x4 matrices to Maya euler angles.
     """
     euler = np.empty((matrix.shape[0],3))
-    m_ = np.empty((3,3))
 
     for ii in prange(matrix.shape[0]):
+        m_ = np.empty((3,3))
         i,j,k,h,n,s,f = _getEulerOrder(axes[ii])
 
         # Normalize xyz axes in case of scale
@@ -398,10 +400,11 @@ def _matrixPointMultiply(point,matrix):
 def _vectorArc(vector0, vector1):
     
     angle = np.empty(vector0.shape[0])
-    vector0_ = np.empty(3)
-    vector1_ = np.empty(3)
 
     for i in prange(vector0.shape[0]):
+        vector0_ = np.empty(3)
+        vector1_ = np.empty(3)
+        
         m = (vector0[i,0]**2 + vector0[i,1]**2 + vector0[i,2]**2) ** 0.5
         if m > 0.:
             vector0_[0] = vector0[i,0] / m
@@ -485,11 +488,12 @@ def _vectorLerp(vector0, vector1, weight):
 @njit(fastmath=True, parallel=True)
 def _vectorToMatrix(vector0, vector1, aim_axis, up_axis):
 
-    vector0_ = np.empty(3)
-    vector1_ = np.empty(3)
     matrix   = np.empty((vector0.shape[0], 4, 4))
 
     for i in prange(vector0.shape[0]):
+        vector0_ = np.empty(3)
+        vector1_ = np.empty(3)
+        
         ii = aim_axis[i]
         jj = up_axis[i]
         kk = (min(ii,jj)-max(ii,jj)+min(ii,jj)) % 3
@@ -619,7 +623,6 @@ def _vectorNormalize(vector):
             vector_[i,j] = vector[i,j]/mag
 
     return vector_
-
 
 
 
@@ -788,12 +791,12 @@ def _quaternionInverse(quat):
 
     # For every quaternion
     for i in prange(quat.shape[0]):
-        mag = quat[i,0]**2 + quat[i,1]**2 + quat[i,2]**2 + quat[i,3]**2
+        lenSquared = quat[i,0]**2 + quat[i,1]**2 + quat[i,2]**2 + quat[i,3]**2
 
-        quat_[i,0] = -quat[i,0]/mag
-        quat_[i,1] = -quat[i,1]/mag
-        quat_[i,2] = -quat[i,2]/mag
-        quat_[i,3] =  quat[i,3]/mag
+        quat_[i,0] = -quat[i,0]/lenSquared
+        quat_[i,1] = -quat[i,1]/lenSquared
+        quat_[i,2] = -quat[i,2]/lenSquared
+        quat_[i,3] =  quat[i,3]/lenSquared
 
     return quat_
 
@@ -824,9 +827,10 @@ def _axisAngleToQuaternion(axis,angle):
     """ Computes a list of quaternions qi,qj,qk,qw from lists of axes and angles
     """
     quat  = np.empty((axis.shape[0],4))
-    axis_ = np.empty(3)
 
     for i in prange(axis.shape[0]):
+        axis_ = np.empty(3)
+        
         mag = (axis[i,0] ** 2 + axis[i,1] ** 2 + axis[i,2] ** 2) ** 0.5
         axis_[0] = axis[i,0]/mag
         axis_[1] = axis[i,1]/mag
@@ -900,11 +904,11 @@ def _vectorArcToQuaternion(vector0,vector1):
 
     quat = np.empty((vector0.shape[0],4))
 
-    v0 = np.empty(3) # normalized vector0
-    v1 = np.empty(3) # normalized vector1
-    h  = np.empty(3) # normalized vector0 + vector1
-
     for i in prange(vector0.shape[0]):
+        v0 = np.empty(3) # normalized vector0
+        v1 = np.empty(3) # normalized vector1
+        h  = np.empty(3) # normalized vector0 + vector1
+        
         # normalized vector0
         mag = (vector0[i,0]**2 + vector0[i,1]**2 + vector0[i,2]**2) ** 0.5
         v0[0] = vector0[i,0]/mag

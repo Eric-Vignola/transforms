@@ -5,8 +5,6 @@ from ._transforms import _quaternionConjugate, _quaternionInverse, _quaternionMu
 from ._transforms import _quaternionNegate, _quaternionSlerp, _quaternionSub
 from ._transforms import _quaternionToMatrix, _vectorDot, _vectorNormalize
 
-from .euler import random as randomEuler
-
 from ._utils import _setDimension, _matchDepth
 
 
@@ -86,7 +84,6 @@ def dot(quat0, quat1):
     quat0, quat1 = _matchDepth(quat0, quat1)
     
     return _vectorDot(quat0, quat1)
-
 
 
 
@@ -172,7 +169,7 @@ def normalize(quat):
 def to_euler(quat, axes=XYZ):
     """ Converts quaternions qi,qj,qk,qw to euler angles
     
-        >>> q = randomEuler(2)               # make 2 random quaternions
+        >>> q = random(2)               # make 2 random quaternions
         >>> print (quaternionToMatrix(q[0])) # from 1 quaternion make 1 matrix
         >>> print (quaternionToMatrix(q))    # from 2 quaternions make 2 matrices
     """
@@ -186,7 +183,9 @@ def to_euler(quat, axes=XYZ):
 def random(n, seed=None):
     """ Computes a list of random quaternions qi,qj,qk,qw
     """
-    eu = randomEuler(n=n, seed=seed)
-    return _eulerToQuaternion(eu, np.array([0]))
+    np.random.seed(seed)
+    eu = np.radians(360 - np.random.random((n,3))*720)
+    
+    return _eulerToQuaternion(eu, np.zeros(n, dtype='int32'))
 
 

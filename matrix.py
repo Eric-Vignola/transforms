@@ -216,7 +216,7 @@ def interpolate(matrix0, matrix1, weight=0.5):
     
     
     # Interpolate scale
-    scale = _vectorLerp(scale0,scale1,weight,1)
+    scale = _vectorLerp(scale0,scale1,weight)
     
     
     # Scale interpolated matrices
@@ -226,9 +226,8 @@ def interpolate(matrix0, matrix1, weight=0.5):
     
     
     # Interpolate position
-    matrix[:,3,:3] = _vectorLerp(matrix0[:,3,:3], matrix1[:,3,:3], weight,0)    
+    matrix[:,3,:3] = _vectorLerp(matrix0[:,3,:3], matrix1[:,3,:3], weight)    
     
-
     return matrix
 
 
@@ -236,8 +235,8 @@ def local(matrix, parent_matrix):
     """ Returns the local matrix to a parent matrix
     """
     
-    matrix        = _setDimension(matrix,3,reshape_matrix=True)
-    parent_matrix = _setDimension(parent_matrix,3,reshape_matrix=True)
+    matrix        = _setDimension(matrix, 3, reshape_matrix=True)
+    parent_matrix = _setDimension(parent_matrix, 3, reshape_matrix=True)
     
     matrix0, parent_matrix = _matchDepth(matrix0, parent_matrix)
 
@@ -250,7 +249,7 @@ def random(n, seed=None, random_position=False):
     euler = np.random.seed(seed)
     euler = np.radians(360 - np.random.random((n,3))*720)
     
-    M = _eulerToMatrix(euler, np.array([0], dtype=np.int32))
+    M = _eulerToMatrix(euler, np.zeros(euler.shape[0], dtype=np.int32))
     
     if random_position:
         M[:,3,:3] = 1 - np.random.random((n, 3)) * 2

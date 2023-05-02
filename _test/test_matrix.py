@@ -127,7 +127,10 @@ class TestMatrix(unittest.TestCase):
         self.assertEqual(np.allclose(test[:, 3, :3], M0[:, 3, :3] + M1[:, 3, :3]), True)
         
         
-        # test point matrix mult
+    def testPoint(self):
+        M0 = matrix.identity(10**6)
+        M0[:, 3, :3] = np.random.random((10**6, 3))
+        
         p = np.random.random((10**6, 3))
-        test = matrix.multiply(p, M0)
-        self.assertEqual(np.allclose(test, M0[:, 3, :3] + p), True)
+        test = matrix.point(p, M0)
+        self.assertEqual(np.allclose(test, M0[:, 3, :3] + p), True)    

@@ -72,35 +72,25 @@ def inverse(matrix):
     return _matrixInverse(matrix)
     
    
+def point(point, matrix):
+    """ Point * Matrix multiplication
+    """
+    point  = _setDimension(point,  2)
+    matrix = _setDimension(matrix, 3, reshape_matrix=True)
+    
+    point, matrix = _matchDepth(point, matrix)
+    
+    return _matrixPointMultiply(point[:, :3], matrix)       
+
     
 def multiply(matrix0, matrix1):
-    """ Multiplies 2 lists of matrices
-        If either input is a point, perform a point/matrix multiplication
+    """ Matrix * Matrix multiplication
     """
-    
-    # are we doing a poing matrix multiplication?
-    matrix0 = np.asarray(matrix0)
-    matrix1 = np.asarray(matrix1)
-    
-    if matrix0.shape[-1] == 3 or matrix1.shape[-1] == 3:
-        if matrix0.shape[-1] == 3:
-            point  = _setDimension(matrix0,2)
-            matrix = _setDimension(matrix1, 3, reshape_matrix=True)
-        else:
-            point  = _setDimension(matrix1,2)
-            matrix = _setDimension(matrix0, 3, reshape_matrix=True)        
-            
-        point, matrix = _matchDepth(point, matrix)
-        return _matrixPointMultiply(point, matrix)            
-            
-            
-    # standard matrix multiplication
-    else:
-        matrix0 = _setDimension(matrix0, 3, reshape_matrix=True)
-        matrix1 = _setDimension(matrix1, 3, reshape_matrix=True)
-        matrix0, matrix1 = _matchDepth(matrix0, matrix1)
-    
-        return _matrixMultiply(matrix0,matrix1)
+    matrix0 = _setDimension(matrix0, 3, reshape_matrix=True)
+    matrix1 = _setDimension(matrix1, 3, reshape_matrix=True)
+    matrix0, matrix1 = _matchDepth(matrix0, matrix1)
+
+    return _matrixMultiply(matrix0,matrix1)
 
 
 def slerp(matrix0, matrix1, weight=0.5):

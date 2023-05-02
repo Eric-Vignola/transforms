@@ -12,13 +12,14 @@ from io import StringIO
 from inspect import getmembers, isbuiltin
 from . import _array
 
+from numba import njit, prange
 
 
 
 
-# dynamically map what's available builtins
+# dynamically map what's available int the cythonized _array module
 methods = dict(getmembers(sys.modules['_array'], isbuiltin))
-CONVERSION_DEPTHS = dict(zip(range(1, len(methods) + 1), methods.values()))
+CONVERSION_DEPTH_MAP = dict(zip(range(1, len(methods) + 1), methods.values()))
 
 
 
@@ -72,7 +73,73 @@ def _to_numpy(data, dtype=None):
         return np.asarray(data, dtype=dtype)
     
     # convert the data as requested to the desired data type
-    return np.asarray(CONVERSION_DEPTHS[depth](data), dtype=dtype)
+    return np.asarray(CONVERSION_DEPTH_MAP[depth](data), dtype=dtype)
+
+
+
+#----------------------------- ARRAY RESIZERS -----------------------------#
+
+@njit(fastmath=True, parallel=True)
+def resize1D(a, new_depth):
+    delta     = new_depth - a.shape[0]
+    new_array = np.empty((new_depth), a.dtype)
+
+    # fill initial array
+    for i in prange(min(a.shape[0], new_depth)):
+        new_array[i] = a[i]
+
+    # dplicate last entry for fill
+    if delta > 0:
+        for i in prange(a.shape[0], a.shape[0]+delta):
+            new_array[i] = a[a.shape[0]-1]
+
+    return new_array   
+
+
+
+@njit(fastmath=True, parallel=True)
+def resize2D(a, new_depth):
+    delta     = new_depth - a.shape[0]
+    new_array = np.empty((new_depth, a.shape[1]), a.dtype)
+
+    # fill initial array
+    for i in prange(min(a.shape[0], new_depth)):
+        for j in range(a.shape[1]):
+            new_array[i,j] = a[i,j]
+
+
+    # dplicate last entry for fill
+    if delta > 0:
+        for i in prange(a.shape[0], a.shape[0]+delta):
+            for j in range(a.shape[1]):
+                new_array[i,j] = a[a.shape[0]-1,j]
+
+    return new_array   
+
+
+@njit(fastmath=True, parallel=True)
+def resize3D(a, new_depth):
+    delta     = new_depth - a.shape[0]
+    new_array = np.empty((new_depth, a.shape[1], a.shape[2]), a.dtype)
+
+    # fill initial array
+    for i in prange(min(a.shape[0], new_depth)):
+        for j in range(a.shape[1]):
+            for k in range(a.shape[2]):
+                new_array[i, j, k] = a[i, j, k]
+
+
+    # dplicate last entry for fill
+    if delta > 0:
+        for i in prange(a.shape[0], a.shape[0]+delta):
+            for j in range(a.shape[1]):
+                for k in range(a.shape[2]):            
+                    new_array[i, j, k] = a[a.shape[0]-1, j, k]
+
+    return new_array   
+
+
+RESIZE_MAP = {1: resize1D, 2: resize2D, 3: resize3D}
 
 
 
@@ -105,11 +172,10 @@ def _matchDepth(*data):
     
     for i in range(len(count)):
         if count[i] > 0 and count[i] < highest:
-            matched[i] = np.concatenate((data[i],) + (np.repeat([data[i][-1]],highest-count[i],axis=0),))
+            #matched[i] = np.concatenate((data[i],) + (np.repeat([data[i][-1]],highest-count[i],axis=0),))
+            matched[i] = RESIZE_MAP[matched[i].ndim](matched[i], highest)
         
     return matched
-
-
 
 
 def profile(cmd, n=100):

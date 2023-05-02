@@ -399,54 +399,6 @@ def slerp(vector0, vector1, weight=0.5):
     return _vectorSlerp(vector0,vector1,weight)
 
 
-def slerp2(vector0, vector1, weight=0.5):
-    """
-    slerp(vector0, vector1, weight=0.5)
-    
-        Spherical interpolation between 2 lists of vectors
-
-        Parameters
-        ----------
-        vector0 : *[float, float, float]* or *[[float, float, float],...]*
-                  a single, or list of vectors
-        
-        vector1 : *[float, float, float]* or *[[float, float, float],...]*
-                  a single, or list of vectors
-            
-        weight  : *[float,...]* or *float*
-                  a single, or list of interpolation weights (default=0.5)
-
-            
-        Returns
-        -------
-        vector: np.array(n,3) 
-                a list of spherically interpolated vectors
-            
-
-        See Also
-        --------
-        lerp: Linear interpolation between 2 lists of vectors.
-        
-        
-        Examples
-        --------
-        >>> vector0 = random(100)                         # random vector array
-        >>> vector1 = random.random(100)                  # random float weight array
-        >>> print (slerp(vector0, vector1, weight))       # slerp 2 lists of vectors by list of floats
-        >>> print (slerp(vector0, vector1, weight[0]))    # slerp 2 lists of vectors by same weight value
-        >>> print (slerp(vector0[0], vector1[0], weight)) # slerp 2 vectors by list of weights
-        """     
-    
-    vector0 = _setDimension(vector0,2)
-    vector1 = _setDimension(vector1,2)
-    weight  = _setDimension(weight,1)
-    
-    vector0, vector1, weight = _matchDepth(vector0, vector1, weight)
-    
-    return _vectorSlerp2(vector0,vector1,weight)
-
-
-
 
 def lerp(vector0, vector1, weight=0.5):
     """

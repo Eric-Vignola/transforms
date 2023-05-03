@@ -34,13 +34,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy as np
 
-from ._transforms import _matrixToEuler, _matrixToQuaternion, _quaternionToMatrix, _vectorArcToQuaternion
-from ._transforms import _vectorCross, _vectorDot, _vectorLerp, _vectorMagnitude, _vectorNormalize
-from ._transforms import _vectorSlerp, _vectorToMatrix, _vectorArc
+from ._transforms import (
+    _matrixToEuler,
+    _matrixToQuaternion,
+    _quaternionToMatrix,
+    _vectorArc,
+    _vectorArcToQuaternion,
+    _vectorCross,
+    _vectorDot,
+    _vectorLerp,
+    _vectorMagnitude,
+    _vectorNormalize,
+    _vectorSlerp,
+    _vectorToMatrix,
+)
 
-from .quaternion  import to_euler as quaternionToEuler
+from ._utils import _matchDepth, _setDimension
 
-from ._utils import _setDimension, _matchDepth
+from .quaternion import to_euler as quaternionToEuler
 
 
 # axes as mapped by Maya's rotate order indices
@@ -661,11 +672,11 @@ def angle(vector0, vector1):
 def random(n, seed=None, normalize=False):
     """ Computes a list of random vectors
     """
-    if not seed is None:
+    if seed is not None:
         np.random.seed(seed)
         
     if normalize:
-        return _vectorNormalize(1 - np.random.random((n,3,))*2)
+        return _vectorNormalize(1 - np.random.random((n,3))*2)
     
     return 1 - np.random.random((n,3)) * 2
         

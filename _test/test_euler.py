@@ -32,11 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
 import numpy as np
-from .. import euler
-from .. import matrix
-from .. import quaternion
-from .. import vector
-import pickle
+from .. import euler, matrix, quaternion
+
 
 class TestEuler(unittest.TestCase):
 

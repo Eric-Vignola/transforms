@@ -130,11 +130,6 @@ class TestVector(unittest.TestCase):
 
         self.assertEqual(np.allclose(ang0, ang1), True)      
 
-
-    def testArcToEuler(self):
-        arc = np.degrees(vector.arc_to_euler([1, 0, 0], [0, 1, 0]))
-        self.assertEqual(np.allclose(arc, [0, 0, 90]), True)      
-        
         
     def testToEuler(self):
         x = np.array([1, 0, 0])

@@ -32,17 +32,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
+# from numba.types import UniTuple, Tuple
+# from numba.pycc import CC
+
+from math import acos, atan2, cos, sin
+
 import numpy as np
-from numba import njit, prange #, float64, int32, intp
-#from numba.types import UniTuple, Tuple
-#from numba.pycc import CC
-
-from math import acos, sin, cos, atan2
+from numba import njit, prange  # , float64, int32, intp
 
 
-#cc = CC('_transforms')
-#cc.verbose = True
-#cc.output_dir = '..'
+# cc = CC('_transforms')
+# cc.verbose = True
+# cc.output_dir = '..'
+
 
 EPSILON = np.finfo(np.float32).eps
 EULER_SAFE  = np.array([0,1,2,0],dtype='int32')

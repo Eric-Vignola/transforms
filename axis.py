@@ -31,11 +31,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 
-
 import numpy as np
 
 from ._transforms import _axisAngleToMatrix, _axisAngleToQuaternion, _matrixToEuler
-from ._utils import _setDimension, _matchDepth
+from ._utils import _matchDepth, _setDimension
+
 
 # axes as mapped by Maya's rotate order indices
 XYZ = 0

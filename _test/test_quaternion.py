@@ -32,7 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
 import numpy as np
-from .. import matrix, euler, quaternion
+from .. import euler, quaternion
 
 
 class TestQuaternion(unittest.TestCase):

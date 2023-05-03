@@ -33,11 +33,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy as np
 
-from ._transforms import _eulerToMatrix, _matrixIdentity, _matrixInverse, _matrixMultiply, _matrixNormalize
-from ._transforms import _matrixPointMultiply, _matrixToEuler, _matrixToQuaternion, _quaternionSlerp
-from ._transforms import _quaternionToMatrix, _vectorLerp
+from ._transforms import (
+    _eulerToMatrix,
+    _matrixIdentity,
+    _matrixInverse,
+    _matrixMultiply,
+    _matrixNormalize,
+    _matrixPointMultiply,
+    _matrixToEuler,
+    _matrixToQuaternion,
+    _quaternionSlerp,
+    _quaternionToMatrix,
+    _vectorLerp,
+)
 
-from ._utils import _setDimension, _matchDepth
+from ._utils import _matchDepth, _setDimension
+
 
 # axes as mapped by Maya's rotate order indices
 XYZ = 0

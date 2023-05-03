@@ -34,7 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 import numpy as np
-import sys
 import cProfile
 import pstats
 import re
@@ -43,17 +42,17 @@ import tempfile
 import os
 
 from io import StringIO
-from inspect import getmembers, isbuiltin
-from . import _array
 
 from numba import njit, prange
 
+from . import _array
+CONVERSION_DEPTH_MAP = {1: _array.convert1D,
+                        2: _array.convert2D,
+                        3: _array.convert3D,
+                        4: _array.convert4D,
+                        5: _array.convert5D,
+                        6: _array.convert6D}
 
-
-
-# dynamically map what's available int the cythonized _array module
-methods = dict(getmembers(sys.modules['_array'], isbuiltin))
-CONVERSION_DEPTH_MAP = dict(zip(range(1, len(methods) + 1), methods.values()))
 
 
 
@@ -230,7 +229,7 @@ def profile(cmd, n=100):
         return float(values[-1])
     
     vals = []
-    for i in range(n):
+    for _ in range(n):
         vals.append(_profile(cmd))
         
     return statistics.median(vals)

@@ -34,12 +34,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy as np
 
-from ._transforms import _eulerToQuaternion, _matrixToEuler, _quaternionAdd
-from ._transforms import _quaternionConjugate, _quaternionInverse, _quaternionMultiply
-from ._transforms import _quaternionNegate, _quaternionSlerp, _quaternionSub
-from ._transforms import _quaternionToMatrix, _vectorDot, _vectorNormalize
+from ._transforms import (
+    _eulerToQuaternion,
+    _matrixToEuler,
+    _quaternionAdd,
+    _quaternionConjugate,
+    _quaternionInverse,
+    _quaternionMultiply,
+    _quaternionNegate,
+    _quaternionSlerp,
+    _quaternionSub,
+    _quaternionToMatrix,
+    _vectorDot,
+    _vectorNormalize,
+)
 
-from ._utils import _setDimension, _matchDepth
+from ._utils import _matchDepth, _setDimension
 
 
 # axes as mapped by Maya's rotate order indices

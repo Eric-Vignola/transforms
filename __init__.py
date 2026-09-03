@@ -1,32 +1,73 @@
 """
-BSD 3-Clause License:
-Copyright (c)  2023, Eric Vignola
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-
-1. Redistributions of source code must retain the above copyright notice,
-    this list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-    this list of conditions and the following disclaimer in the documentation
-    and/or other materials provided with the distribution.
-
-3. Neither the name of copyright holders nor the names of its
-    contributors may be used to endorse or promote products derived from
-    this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+Move all data types into the same namespace
 """
 
+from transforms.main import (
+    axis_angle_to_euler,
+    axis_angle_to_matrix,
+    # axis / angle
+    axis_angle_to_quaternion,
+    euler_filter,
+    euler_random,
+    euler_reorder,
+    euler_slerp,
+    # euler
+    euler_to_matrix,
+    euler_to_quaternion,
+    matrix_decompose,
+    matrix_delta,
+    matrix_flatten,
+    # matrix
+    matrix_identity,
+    matrix_interpolate,
+    matrix_inverse,
+    matrix_local,
+    matrix_multiply,
+    matrix_normalize,
+    matrix_point_multiply,
+    matrix_random,
+    matrix_slerp,
+    matrix_to_euler,
+    matrix_to_quaternion,
+    matrix_transpose,
+    matrix_weighted_rotational,
+    matrix_weighted_transformation,
+    quaternion_add,
+    quaternion_conjugate,
+    quaternion_dot,
+    quaternion_inverse,
+    quaternion_multiply,
+    quaternion_negate,
+    quaternion_normalize,
+    quaternion_random,
+    # quaternion
+    quaternion_slerp,
+    quaternion_sub,
+    quaternion_to_euler,
+    quaternion_to_matrix,
+    vector_angle,
+    vector_arc_to_euler,
+    vector_arc_to_matrix,
+    vector_arc_to_quaternion,
+    vector_cross,
+    vector_dot,
+    vector_lerp,
+    vector_magnitude,
+    vector_normalize,
+    vector_random,
+    vector_slerp,
+    vector_to_euler,
+    # vector
+    vector_to_matrix,
+    vector_to_quaternion,
+    X,
+    # constants
+    XYZ,
+    XZY,
+    Y,
+    YXZ,
+    YZX,
+    Z,
+    ZXY,
+    ZYX,
+)

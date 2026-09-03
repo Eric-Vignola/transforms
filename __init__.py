@@ -2,6 +2,8 @@
 Move all data types into the same namespace
 """
 
+__version__ = "1.0.0"
+
 from transforms.main import (
     axis_angle_to_euler,
     axis_angle_to_matrix,

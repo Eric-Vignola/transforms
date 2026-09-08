@@ -1,9 +1,10 @@
 # `transforms` Cheatsheet
 
-Copy-paste recipes for the functional transform math. Every block below runs,
-in order, as one script. For the concepts see [`README.md`](README.md).
+Copy-paste recipes for the functional transform math. Every block below is
+self-contained: it carries its own imports and its own data, so you can jump
+straight to the section you need and run it. For the concepts see
+[`README.md`](README.md).
 
-- [Setup](#setup)
 - [Conventions, in one worked example](#conventions-in-one-worked-example)
 - [Constants](#constants)
 - [Matrix](#matrix)
@@ -17,48 +18,15 @@ in order, as one script. For the concepts see [`README.md`](README.md).
 
 ---
 
-## Setup
-
-No mesh assets are needed — everything here is built inline.
-
-```python
-import numpy as np
-
-np.set_printoptions(precision=4, suppress=True)
-
-# eight corners of a unit cube, as a plain (8, 3) point cloud
-CUBE = np.array([
-    [-0.5, -0.5, -0.5], [0.5, -0.5, -0.5], [0.5, 0.5, -0.5], [-0.5, 0.5, -0.5],
-    [-0.5, -0.5,  0.5], [0.5, -0.5,  0.5], [0.5, 0.5,  0.5], [-0.5, 0.5,  0.5],
-])
-
-# a 3 x 3 grid of points on the XZ plane
-GRID = np.array([[x, 0.0, z] for x in (-1.0, 0.0, 1.0) for z in (-1.0, 0.0, 1.0)])
-
-print(CUBE.shape, GRID.shape)
-```
-
-Deterministic batches for the interpolation examples:
-
-```python
-from transforms import euler_random, matrix_random, quaternion_random, vector_random
-
-EA = euler_random(4, seed=12345)              # (4, 3) radians
-QUATS = quaternion_random(4, seed=12345)      # (4, 4) (i, j, k, w)
-MATS = matrix_random(4, seed=12345)           # (4, 4, 4) rotation only
-MATS_T = matrix_random(4, seed=999, random_position=True)   # with translation
-
-print(EA.shape, QUATS.shape, MATS.shape)
-```
-
----
-
 ## Conventions, in one worked example
 
 Row-major, row-vector, radians, `(i, j, k, w)`. Everything else follows.
 
 ```python
+import numpy as np
 from transforms import axis_angle_to_quaternion, euler_to_matrix, matrix_point_multiply
+
+np.set_printoptions(precision=4, suppress=True)      # so cos(90 deg) reads as 0, not 6e-17
 
 M = euler_to_matrix([0.0, 0.0, np.radians(90)], 0)   # +90 deg about Z, XYZ order
 print(M[0])
@@ -108,7 +76,8 @@ Rotate order is a plain `int`, so a bare `0` works anywhere `axes=` is taken —
 and a **list** of orders works too, one per row.
 
 ```python
-from transforms import matrix_to_euler
+import numpy as np
+from transforms import XYZ, XZY, YXZ, YZX, ZXY, ZYX, euler_to_matrix, matrix_to_euler
 
 one = euler_to_matrix([np.radians(10), np.radians(20), np.radians(30)], XYZ)
 print(np.degrees(matrix_to_euler(one, [XYZ, YZX, ZXY, XZY, YXZ, ZYX])))   # (6, 3)
@@ -132,11 +101,14 @@ print(I.shape, R.shape, RT.shape)
 ### Convert
 
 ```python
-from transforms import matrix_to_euler, matrix_to_quaternion
+import numpy as np
+from transforms import XYZ, euler_to_matrix, matrix_random, matrix_to_euler, matrix_to_quaternion
 
-ea = matrix_to_euler(MATS, XYZ)          # (4, 3) radians
-q = matrix_to_quaternion(MATS)           # (4, 4) (i, j, k, w)
-assert np.allclose(euler_to_matrix(ea, XYZ), MATS)
+mats = matrix_random(4, seed=12345)      # (4, 4, 4) rotation only
+
+ea = matrix_to_euler(mats, XYZ)          # (4, 3) radians
+q = matrix_to_quaternion(mats)           # (4, 4) (i, j, k, w)
+assert np.allclose(euler_to_matrix(ea, XYZ), mats)
 ```
 
 ### Compose, invert, transpose
@@ -145,7 +117,19 @@ assert np.allclose(euler_to_matrix(ea, XYZ), MATS)
 **A is applied first**, then B.
 
 ```python
-from transforms import matrix_inverse, matrix_multiply, matrix_transpose
+import numpy as np
+from transforms import (
+    XYZ,
+    euler_to_matrix,
+    matrix_identity,
+    matrix_inverse,
+    matrix_multiply,
+    matrix_point_multiply,
+    matrix_random,
+    matrix_transpose,
+)
+
+mats = matrix_random(4, seed=12345)
 
 T = matrix_identity(1)
 T[0, 3, :3] = [10.0, 20.0, 30.0]
@@ -156,17 +140,19 @@ move_then_rotate = matrix_multiply(T, Rz)
 print(matrix_point_multiply([1.0, 0.0, 0.0], rotate_then_move))   # [[10, 21, 30]]
 print(matrix_point_multiply([1.0, 0.0, 0.0], move_then_rotate))   # [[-20, 11, 30]]
 
-assert np.allclose(matrix_multiply(MATS, matrix_inverse(MATS)), matrix_identity(4))
-assert np.allclose(matrix_transpose(MATS), matrix_inverse(MATS))  # true for pure rotations
+assert np.allclose(matrix_multiply(mats, matrix_inverse(mats)), matrix_identity(4))
+assert np.allclose(matrix_transpose(mats), matrix_inverse(mats))  # true for pure rotations
 ```
 
 ### Normalize away scale
 
 ```python
-from transforms import matrix_normalize
+import numpy as np
+from transforms import matrix_normalize, matrix_random
 
-scaled = MATS.copy()
+scaled = matrix_random(4, seed=12345)
 scaled[:, :3, :3] *= 5.0
+
 clean = matrix_normalize(scaled)
 assert np.allclose(np.linalg.norm(clean[:, :3, :3], axis=2), 1.0)
 ```
@@ -176,9 +162,18 @@ assert np.allclose(np.linalg.norm(clean[:, :3, :3], axis=2), 1.0)
 `matrix_point_multiply(point, matrix)` — points first, matrices second.
 
 ```python
+import numpy as np
+from transforms import matrix_identity, matrix_point_multiply
+
+# eight corners of a unit cube, as a plain (8, 3) point cloud
+cube = np.array([
+    [-0.5, -0.5, -0.5], [0.5, -0.5, -0.5], [0.5, 0.5, -0.5], [-0.5, 0.5, -0.5],
+    [-0.5, -0.5,  0.5], [0.5, -0.5,  0.5], [0.5, 0.5,  0.5], [-0.5, 0.5,  0.5],
+])
+
 world = matrix_identity(1)
 world[0, 3, :3] = [0.0, 2.0, 0.0]
-print(matrix_point_multiply(CUBE, world))     # one matrix, eight points
+print(matrix_point_multiply(cube, world))     # one matrix, eight points
 ```
 
 ### Change of space
@@ -187,7 +182,8 @@ print(matrix_point_multiply(CUBE, world))     # one matrix, eight points
 the same thing with the **arguments in the opposite order**.
 
 ```python
-from transforms import matrix_delta, matrix_local
+import numpy as np
+from transforms import matrix_delta, matrix_identity, matrix_local
 
 parent = matrix_identity(1)
 parent[0, 3, :3] = [0.0, 5.0, 0.0]
@@ -204,23 +200,29 @@ assert np.allclose(matrix_delta(parent, child), matrix_local(child, parent))
 `matrix_interpolate` blends scale (lerp), rotation (slerp) and translation (lerp).
 
 ```python
-from transforms import matrix_interpolate, matrix_slerp
+from transforms import matrix_identity, matrix_interpolate, matrix_slerp
 
 A = matrix_identity(1)
 A[0, 3, :3] = [10.0, 0.0, 0.0]
 B = matrix_identity(1)
 B[0, 3, :3] = [20.0, 0.0, 0.0]
 
-print(matrix_slerp(A.copy(), B.copy(), 0.5)[0, 3, :3])         # [0, 0, 0] -- dropped
-print(matrix_interpolate(A.copy(), B.copy(), 0.5)[0, 3, :3])   # [15, 0, 0]
+print(matrix_slerp(A, B, 0.5)[0, 3, :3])         # [0, 0, 0] -- dropped
+print(matrix_interpolate(A, B, 0.5)[0, 3, :3])   # [15, 0, 0]
 ```
 
 Per-row weights, and `shortest=False` to take the long way round:
 
 ```python
+import numpy as np
+from transforms import matrix_random, matrix_slerp
+
+mats = matrix_random(4, seed=12345)                          # rotation only
+mats_t = matrix_random(4, seed=999, random_position=True)    # with translation
+
 w = np.linspace(0.0, 1.0, 4)
-print(matrix_slerp(MATS, MATS_T, w).shape)
-print(matrix_slerp(MATS, MATS_T, 0.5, shortest=False).shape)
+print(matrix_slerp(mats, mats_t, w).shape)
+print(matrix_slerp(mats, mats_t, 0.5, shortest=False).shape)
 ```
 
 ### Maya-flat 16-element matrices
@@ -228,7 +230,7 @@ print(matrix_slerp(MATS, MATS_T, 0.5, shortest=False).shape)
 Any function taking a matrix also accepts a flat 16-float list.
 
 ```python
-from transforms import matrix_flatten
+from transforms import matrix_flatten, matrix_to_quaternion
 
 flat = matrix_flatten([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
 print(flat)                                   # 16 floats, Maya order
@@ -241,7 +243,8 @@ assert matrix_flatten(flat) is flat           # already flat -> returned as-is
 SVD split into three 4x4s: `(translation, rotation, scale)`.
 
 ```python
-from transforms import matrix_decompose
+import numpy as np
+from transforms import XYZ, euler_to_matrix, matrix_decompose
 
 M = euler_to_matrix([0.0, 0.0, np.radians(45)], XYZ)[0].copy()
 M[:3, :3] *= 2.0                              # uniform scale
@@ -255,7 +258,14 @@ assert np.allclose(s @ r @ t, M)              # exact for uniform scale
 ### Weighted averages
 
 ```python
-from transforms import matrix_weighted_rotational, matrix_weighted_transformation
+import numpy as np
+from transforms import (
+    XYZ,
+    euler_to_matrix,
+    matrix_identity,
+    matrix_weighted_rotational,
+    matrix_weighted_transformation,
+)
 
 R0 = np.eye(3)
 R1 = euler_to_matrix([0.0, 0.0, np.radians(90)], XYZ)[0, :3, :3]
@@ -275,7 +285,10 @@ print(len(matrix_weighted_transformation([M0, M1], [1.0, 1.0], flatten=True)))  
 ### Build and convert
 
 ```python
+import numpy as np
 from transforms import (
+    XYZ,
+    euler_to_matrix,
     quaternion_random,
     quaternion_to_euler,
     quaternion_to_matrix,
@@ -290,6 +303,7 @@ assert np.allclose(quaternion_to_matrix(Q), euler_to_matrix(quaternion_to_euler(
 ### Algebra
 
 ```python
+import numpy as np
 from transforms import (
     quaternion_add,
     quaternion_conjugate,
@@ -298,9 +312,11 @@ from transforms import (
     quaternion_multiply,
     quaternion_negate,
     quaternion_normalize,
+    quaternion_random,
     quaternion_sub,
 )
 
+Q = quaternion_random(4, seed=12345)
 identity_q = np.array([[0.0, 0.0, 0.0, 1.0]])
 
 assert np.allclose(quaternion_multiply(identity_q, Q), Q)
@@ -317,7 +333,13 @@ assert np.allclose(quaternion_normalize(Q * 0.1), Q)
 **opposite order** from `matrix_multiply`:
 
 ```python
-from transforms import axis_angle_to_quaternion
+import numpy as np
+from transforms import (
+    axis_angle_to_quaternion,
+    matrix_multiply,
+    quaternion_multiply,
+    quaternion_to_matrix,
+)
 
 qx = axis_angle_to_quaternion([1.0, 0.0, 0.0], np.radians(90))
 qy = axis_angle_to_quaternion([0.0, 1.0, 0.0], np.radians(90))
@@ -331,7 +353,7 @@ assert np.allclose(
 ### Slerp
 
 ```python
-from transforms import quaternion_slerp
+from transforms import quaternion_random, quaternion_slerp
 
 q0 = quaternion_random(1, seed=1)
 q1 = quaternion_random(1, seed=2)
@@ -364,6 +386,12 @@ from transforms.main import (
 it back.
 
 ```python
+import numpy as np
+from transforms import quaternion_random, quaternion_to_matrix
+from transforms.main import quaternion_exp, quaternion_log
+
+Q = quaternion_random(4, seed=12345)
+
 rotvec = quaternion_log(Q)                       # (4, 3)
 assert np.allclose(quaternion_to_matrix(quaternion_exp(rotvec)), quaternion_to_matrix(Q))
 print(np.degrees(np.linalg.norm(rotvec, axis=1)))    # rotation magnitudes in degrees
@@ -375,6 +403,13 @@ Normalised linear interpolation. Fast, exact at the endpoints, but not
 constant-angular-velocity in between.
 
 ```python
+import numpy as np
+from transforms import quaternion_random, quaternion_slerp
+from transforms.main import quaternion_nlerp
+
+q0 = quaternion_random(1, seed=1)
+q1 = quaternion_random(1, seed=2)
+
 print(quaternion_nlerp(q0, q1, 0.25))
 print(quaternion_slerp(q0, q1, 0.25))            # differs in the middle, matches at 0 and 1
 
@@ -388,6 +423,10 @@ Build the inner-quadrangle controls with `quaternion_intermediate`, then feed a
 segment to `quaternion_squad`.
 
 ```python
+import numpy as np
+from transforms import quaternion_random
+from transforms.main import quaternion_intermediate, quaternion_squad
+
 keys = quaternion_random(4, seed=11)
 
 c0 = quaternion_intermediate(keys[0:1], keys[1:2], keys[2:3])
@@ -406,14 +445,8 @@ assert np.allclose(quaternion_squad(keys[1:2], c0, c1, keys[2:3], 0.0), keys[1:2
 All euler angles are **radians**, ordered `(x, y, z)` regardless of rotate order.
 
 ```python
-from transforms import (
-    euler_filter,
-    euler_random,
-    euler_reorder,
-    euler_slerp,
-    euler_to_matrix,
-    euler_to_quaternion,
-)
+import numpy as np
+from transforms import XYZ, euler_to_matrix, euler_to_quaternion
 
 ea = np.radians([[10.0, 20.0, 30.0]])
 print(euler_to_matrix(ea, XYZ).shape)            # (1, 4, 4)
@@ -425,6 +458,11 @@ print(euler_to_quaternion(ea, XYZ))              # (1, 4)
 Same pose, different rotate order.
 
 ```python
+import numpy as np
+from transforms import XYZ, ZYX, euler_reorder, euler_to_matrix
+
+ea = np.radians([[10.0, 20.0, 30.0]])
+
 zyx = euler_reorder(ea, XYZ, ZYX)
 print(np.degrees(zyx))
 assert np.allclose(euler_to_matrix(ea, XYZ), euler_to_matrix(zyx, ZYX))
@@ -435,6 +473,8 @@ assert np.allclose(euler_to_matrix(ea, XYZ), euler_to_matrix(zyx, ZYX))
 Both endpoints and the result can each carry their own rotate order.
 
 ```python
+from transforms import XYZ, YZX, ZXY, euler_random, euler_slerp
+
 e0 = euler_random(4, seed=1)
 e1 = euler_random(4, seed=2)
 
@@ -449,6 +489,15 @@ Frames run along the first axis. `axes` is **required** — the flip identity
 depends on the rotate order.
 
 ```python
+import numpy as np
+from transforms import (
+    XYZ,
+    euler_filter,
+    euler_to_matrix,
+    euler_to_quaternion,
+    quaternion_to_euler,
+)
+
 # a smooth sweep about Y, decomposed one frame at a time -> curve steps by half a turn
 sweep = np.array([
     quaternion_to_euler(
@@ -468,6 +517,16 @@ assert np.allclose(euler_to_matrix(sweep, XYZ), euler_to_matrix(clean, XYZ))   #
 It filters stacks too — one rotate order per curve:
 
 ```python
+import numpy as np
+from transforms import XYZ, XZY, euler_filter, euler_to_quaternion, quaternion_to_euler
+
+sweep = np.array([
+    quaternion_to_euler(
+        euler_to_quaternion(np.radians([[0.0, a, 0.0]]), XYZ), XYZ
+    )[0]
+    for a in np.linspace(-170.0, 170.0, 48)
+])
+
 block = np.stack([sweep, sweep], axis=1)         # (48, 2, 3)
 print(euler_filter(block, [XYZ, XZY]).shape)     # (48, 2, 3)
 ```
@@ -475,6 +534,8 @@ print(euler_filter(block, [XYZ, XZY]).shape)     # (48, 2, 3)
 ### Random
 
 ```python
+from transforms import euler_random
+
 print(euler_random(3, seed=5))                   # (3, 3) radians in [-2pi, 2pi]
 ```
 
@@ -485,11 +546,15 @@ print(euler_random(3, seed=5))                   # (3, 3) radians in [-2pi, 2pi]
 An axis vector plus an angle in radians.
 
 ```python
+import numpy as np
 from transforms import (
+    XYZ,
     axis_angle_to_euler,
     axis_angle_to_matrix,
     axis_angle_to_quaternion,
 )
+
+np.set_printoptions(precision=4, suppress=True)      # so sin(180 deg) reads as 0, not 1e-16
 
 print(axis_angle_to_quaternion([1.0, 0.0, 0.0], np.radians(90)))
 print(axis_angle_to_matrix([0.0, 1.0, 0.0], np.radians(180))[0])
@@ -499,6 +564,9 @@ print(np.degrees(axis_angle_to_euler([0.0, 0.0, 1.0], np.radians(90), axes=XYZ))
 Batched — one axis and one angle per row:
 
 ```python
+import numpy as np
+from transforms import axis_angle_to_matrix
+
 axes3 = np.array([[1.0, 0, 0], [0, 1.0, 0], [0, 0, 1.0]])
 angles = np.radians([45.0, 90.0, 180.0])
 print(axis_angle_to_matrix(axes3, angles).shape)     # (3, 4, 4)
@@ -507,6 +575,9 @@ print(axis_angle_to_matrix(axes3, angles).shape)     # (3, 4, 4)
 `angle` defaults to `0.0`, which gives identity:
 
 ```python
+import numpy as np
+from transforms import axis_angle_to_quaternion
+
 assert np.allclose(axis_angle_to_quaternion([1.0, 0.0, 0.0]), [[0.0, 0.0, 0.0, 1.0]])
 ```
 
@@ -517,6 +588,7 @@ assert np.allclose(axis_angle_to_quaternion([1.0, 0.0, 0.0]), [[0.0, 0.0, 0.0, 1
 ### Basics
 
 ```python
+import numpy as np
 from transforms import (
     vector_angle,
     vector_cross,
@@ -549,13 +621,18 @@ print(vector_slerp([1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.5, 1.0]))
 `vector_lerp` maps NaNs to 0:
 
 ```python
+import numpy as np
+from transforms import vector_lerp
+
 print(vector_lerp([0.0, 0.0, 0.0], [np.nan, 1.0, 1.0], 0.5))         # [[0, 0.5, 0.5]]
 ```
 
 ### Shortest arc between two directions
 
 ```python
+import numpy as np
 from transforms import (
+    matrix_point_multiply,
     vector_arc_to_euler,
     vector_arc_to_matrix,
     vector_arc_to_quaternion,
@@ -575,7 +652,15 @@ Build an orientation from an aim direction and an up direction. `aim_axis` and
 orthogonalised against the aim vector for you.
 
 ```python
-from transforms import vector_to_euler, vector_to_matrix, vector_to_quaternion
+import numpy as np
+from transforms import (
+    X,
+    Y,
+    matrix_identity,
+    vector_to_euler,
+    vector_to_matrix,
+    vector_to_quaternion,
+)
 
 M = vector_to_matrix([0.0, 1.0, 0.0], [0.0, 0.0, 1.0], aim_axis=X, up_axis=Y)
 print(M[0])                                      # row 0 == aim, row 1 == up
@@ -591,7 +676,13 @@ assert np.allclose(vector_to_matrix([1.0, 0, 0], [1.0, 1.0, 0.0]), matrix_identi
 Aim a whole grid of points at the origin:
 
 ```python
-aim = vector_normalize(-GRID + [0.0, 1e-9, 0.0])
+import numpy as np
+from transforms import Y, Z, vector_normalize, vector_to_matrix
+
+# a 3 x 3 grid of points on the XZ plane
+grid = np.array([[x, 0.0, z] for x in (-1.0, 0.0, 1.0) for z in (-1.0, 0.0, 1.0)])
+
+aim = vector_normalize(-grid + [0.0, 1e-9, 0.0])
 frames = vector_to_matrix(aim, [0.0, 1.0, 0.0], aim_axis=Z, up_axis=Y)
 print(frames.shape)                              # (9, 4, 4)
 ```
@@ -607,17 +698,30 @@ single matrix pairs with N points, a single weight with N quaternions, and so
 on.
 
 ```python
-one_matrix = matrix_random(1, seed=4)
-print(matrix_point_multiply(CUBE, one_matrix).shape)      # (8, 3) -- matrix reused
+from transforms import (
+    matrix_point_multiply,
+    matrix_random,
+    quaternion_random,
+    quaternion_slerp,
+    vector_random,
+)
 
-print(quaternion_slerp(QUATS, QUATS[::-1], 0.5).shape)    # (4, 4)
-print(quaternion_slerp(QUATS, QUATS[::-1], [0.0, 0.25, 0.5, 1.0]).shape)
+points = vector_random(8, seed=2)                         # (8, 3)
+one_matrix = matrix_random(1, seed=4)
+print(matrix_point_multiply(points, one_matrix).shape)    # (8, 3) -- matrix reused
+
+quats = quaternion_random(4, seed=12345)
+print(quaternion_slerp(quats, quats[::-1], 0.5).shape)    # (4, 4)
+print(quaternion_slerp(quats, quats[::-1], [0.0, 0.25, 0.5, 1.0]).shape)
 ```
 
 A bare `(3,)` vector or `(4, 4)` matrix is promoted to a stack of one, so the
 return value is always batched:
 
 ```python
+import numpy as np
+from transforms import matrix_to_quaternion, vector_normalize
+
 print(vector_normalize([1.0, 2.0, 3.0]).shape)            # (1, 3), not (3,)
 print(matrix_to_quaternion(np.eye(4)).shape)              # (1, 4)
 ```
@@ -626,6 +730,8 @@ Any other length is a mistake and raises. Nothing is padded, recycled or
 truncated to make the call go through:
 
 ```python
+from transforms import vector_dot, vector_random
+
 try:
     vector_dot(vector_random(5, seed=5), vector_random(2, seed=6))
 except ValueError as err:
@@ -636,6 +742,8 @@ This matters most where a wrong answer looks plausible — an off-by-one in a
 joint walk, or a rotate-order list built from a partial selection:
 
 ```python
+from transforms import XYZ, ZYX, matrix_random, matrix_to_euler
+
 try:
     matrix_to_euler(matrix_random(10, seed=3), [XYZ, ZYX, XYZ])
 except ValueError as err:
@@ -656,6 +764,9 @@ A length-0 input raises for the same reason, rather than being skipped.
   values come back sorted descending and no longer line up with X / Y / Z.
 
   ```python
+  import numpy as np
+  from transforms import XYZ, euler_to_matrix, matrix_decompose
+
   M = euler_to_matrix([0.0, 0.0, np.radians(45)], XYZ)[0].copy()
   M[:3, :3] = np.diag([2.0, 3.0, 4.0]) @ M[:3, :3]
   _, _, s = matrix_decompose(M)

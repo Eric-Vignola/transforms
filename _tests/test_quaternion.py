@@ -28,8 +28,8 @@ def allclose(x, y, atol=EPSILON):
 
 class TestQuaternion(unittest.TestCase):
     def testRandom(self):
-        Q    = quaternion_random(10**6, RANDOM_SEED)
-        M    = quaternion_to_matrix(Q)
+        Q = quaternion_random(10**6, RANDOM_SEED)
+        M = quaternion_to_matrix(Q)
 
         x    = np.einsum("...i,...i", M[:, 0], M[:, 0]) ** 0.5
         y    = np.einsum("...i,...i", M[:, 1], M[:, 1]) ** 0.5
@@ -49,8 +49,8 @@ class TestQuaternion(unittest.TestCase):
         self.assertEqual(allclose(M, M_), True)
 
     def testToMatrix(self):
-        Q    = quaternion_random(10**6, RANDOM_SEED)
-        M    = quaternion_to_matrix(Q)
+        Q = quaternion_random(10**6, RANDOM_SEED)
+        M = quaternion_to_matrix(Q)
 
         x    = np.einsum("...i,...i", M[:, 0], M[:, 0]) ** 0.5
         y    = np.einsum("...i,...i", M[:, 1], M[:, 1]) ** 0.5
@@ -107,7 +107,7 @@ class TestQuaternion(unittest.TestCase):
 
         test = np.array(Q)
         test[:, :3] *= -1
-        test /= np.einsum("...i,...i", Q, Q)[:, None]
+        test        /= np.einsum("...i,...i", Q, Q)[:, None]
 
         self.assertEqual(allclose(Q_, test), True)
 
@@ -119,7 +119,7 @@ class TestQuaternion(unittest.TestCase):
         self.assertEqual(allclose(Q_, Q0 - Q1), True)
 
     def testMultiply(self):
-        Q0 = np.zeros((10**6, 4))
+        Q0       = np.zeros((10**6, 4))
         Q0[:, 3] = 1.0
 
         Q1 = quaternion_random(10**6, RANDOM_SEED)

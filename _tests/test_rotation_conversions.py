@@ -30,9 +30,9 @@ EPSILON = np.finfo(np.float32).eps
 # these kernels are njit(fastmath=True); ~1e-5 degrees is the achievable floor
 ANGLE_TOL_DEGREES = 1e-4
 
-RANDOM_SEED       = 12345
-ORDERS            = (0, 1, 2, 3, 4, 5)  # xyz yzx zxy xzy yxz zyx
-ORDER_NAMES       = ("xyz", "yzx", "zxy", "xzy", "yxz", "zyx")
+RANDOM_SEED = 12345
+ORDERS      = (0, 1, 2, 3, 4, 5)  # xyz yzx zxy xzy yxz zyx
+ORDER_NAMES = ("xyz", "yzx", "zxy", "xzy", "yxz", "zyx")
 
 # Generated from Maya 2026 via maya.api.OpenMaya MEulerRotation.asQuaternion()
 # euler degrees -> {rotate_order: (qx, qy, qz, qw)}
@@ -215,7 +215,7 @@ class TestMayaParity(unittest.TestCase):
                 (0.0, 0.0, 0.7071067811865475, 0.7071067811865476),
             )
         ):
-            euler = np.zeros((1, 3))
+            euler          = np.zeros((1, 3))
             euler[0, axis] = np.radians(90.0)
             for order in ORDERS:
                 got = euler_to_quaternion(euler, axes=order)

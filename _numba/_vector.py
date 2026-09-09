@@ -12,7 +12,7 @@ def _vector_arc(vector0, vector1):
         vector0_ = np.empty(3, dtype=vector0.dtype)
         vector1_ = np.empty(3, dtype=vector0.dtype)
 
-        m        = (vector0[i, 0] ** 2 + vector0[i, 1] ** 2 + vector0[i, 2] ** 2) ** 0.5
+        m = (vector0[i, 0] ** 2 + vector0[i, 1] ** 2 + vector0[i, 2] ** 2) ** 0.5
         if m > 0.0:
             vector0_[0] = vector0[i, 0] / m
             vector0_[1] = vector0[i, 1] / m
@@ -154,11 +154,11 @@ def _vector_to_matrix(vector0, vector1, aim_axis, up_axis):
         vector0_ = np.empty(3, dtype=vector0.dtype)
         vector1_ = np.empty(3, dtype=vector0.dtype)
 
-        ii       = aim_axis[i]
-        jj       = up_axis[i]
-        kk       = (min(ii, jj) - max(ii, jj) + min(ii, jj)) % 3
+        ii   = aim_axis[i]
+        jj   = up_axis[i]
+        kk   = (min(ii, jj) - max(ii, jj) + min(ii, jj)) % 3
 
-        flip     = 0
+        flip = 0
         if ii == 0 and jj == 2:
             flip = 1
         elif ii == 1 and jj == 0:
@@ -234,29 +234,29 @@ def _vector_arc_to_quaternion(vector0, vector1):
     quat = np.empty((vector0.shape[0], 4), dtype=vector0.dtype)
 
     for i in prange(vector0.shape[0]):
-        v0  = np.empty(3, dtype=vector0.dtype)
-        v1  = np.empty(3, dtype=vector0.dtype)
-        h   = np.empty(3, dtype=vector0.dtype)
+        v0 = np.empty(3, dtype=vector0.dtype)
+        v1 = np.empty(3, dtype=vector0.dtype)
+        h  = np.empty(3, dtype=vector0.dtype)
 
-        mag = (vector0[i, 0] ** 2 + vector0[i, 1] ** 2 + vector0[i, 2] ** 2) ** 0.5
+        mag   = (vector0[i, 0] ** 2 + vector0[i, 1] ** 2 + vector0[i, 2] ** 2) ** 0.5
         v0[0] = vector0[i, 0] / mag
         v0[1] = vector0[i, 1] / mag
         v0[2] = vector0[i, 2] / mag
 
-        mag = (vector1[i, 0] ** 2 + vector1[i, 1] ** 2 + vector1[i, 2] ** 2) ** 0.5
+        mag   = (vector1[i, 0] ** 2 + vector1[i, 1] ** 2 + vector1[i, 2] ** 2) ** 0.5
         v1[0] = vector1[i, 0] / mag
         v1[1] = vector1[i, 1] / mag
         v1[2] = vector1[i, 2] / mag
 
-        h[0] = v0[0] + v1[0]
-        h[1] = v0[1] + v1[1]
-        h[2] = v0[2] + v1[2]
+        h[0]  = v0[0] + v1[0]
+        h[1]  = v0[1] + v1[1]
+        h[2]  = v0[2] + v1[2]
 
-        mag = (h[0] ** 2 + h[1] ** 2 + h[2] ** 2) ** 0.5
+        mag   = (h[0] ** 2 + h[1] ** 2 + h[2] ** 2) ** 0.5
 
-        h[0] = h[0] / mag
-        h[1] = h[1] / mag
-        h[2] = h[2] / mag
+        h[0]  = h[0] / mag
+        h[1]  = h[1] / mag
+        h[2]  = h[2] / mag
 
         quat[i, 0] = v0[1] * h[2] - v0[2] * h[1]
         quat[i, 1] = v0[2] * h[0] - v0[0] * h[2]

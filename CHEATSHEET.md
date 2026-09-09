@@ -131,9 +131,9 @@ from transforms import (
 
 mats = matrix_random(4, seed=12345)
 
-T    = matrix_identity(1)
+T           = matrix_identity(1)
 T[0, 3, :3] = [10.0, 20.0, 30.0]
-Rz               = euler_to_matrix([0.0, 0.0, np.radians(90)], XYZ)
+Rz          = euler_to_matrix([0.0, 0.0, np.radians(90)], XYZ)
 
 rotate_then_move = matrix_multiply(Rz, T)
 move_then_rotate = matrix_multiply(T, Rz)
@@ -171,7 +171,7 @@ cube = np.array([
     [-0.5, -0.5,  0.5], [0.5, -0.5,  0.5], [0.5, 0.5,  0.5], [-0.5, 0.5,  0.5],
 ])
 
-world = matrix_identity(1)
+world           = matrix_identity(1)
 world[0, 3, :3] = [0.0, 2.0, 0.0]
 print(matrix_point_multiply(cube, world))     # one matrix, eight points
 ```
@@ -185,10 +185,10 @@ the same thing with the **arguments in the opposite order**.
 import numpy as np
 from transforms import matrix_delta, matrix_identity, matrix_local
 
-parent = matrix_identity(1)
+parent           = matrix_identity(1)
 parent[0, 3, :3] = [0.0, 5.0, 0.0]
-child = matrix_identity(1)
-child[0, 3, :3] = [0.0, 8.0, 0.0]
+child            = matrix_identity(1)
+child[0, 3, :3]  = [0.0, 8.0, 0.0]
 
 print(matrix_local(child, parent)[0, 3, :3])              # [0, 3, 0]
 assert np.allclose(matrix_delta(parent, child), matrix_local(child, parent))
@@ -202,9 +202,9 @@ assert np.allclose(matrix_delta(parent, child), matrix_local(child, parent))
 ```python
 from transforms import matrix_identity, matrix_interpolate, matrix_slerp
 
-A = matrix_identity(1)
+A           = matrix_identity(1)
 A[0, 3, :3] = [10.0, 0.0, 0.0]
-B = matrix_identity(1)
+B           = matrix_identity(1)
 B[0, 3, :3] = [20.0, 0.0, 0.0]
 
 print(matrix_slerp(A, B, 0.5)[0, 3, :3])        # [0, 0, 0] -- dropped
@@ -220,7 +220,7 @@ from transforms import matrix_random, matrix_slerp
 mats   = matrix_random(4, seed=12345)                      # rotation only
 mats_t = matrix_random(4, seed=999, random_position=True)  # with translation
 
-w      = np.linspace(0.0, 1.0, 4)
+w = np.linspace(0.0, 1.0, 4)
 print(matrix_slerp(mats, mats_t, w).shape)
 print(matrix_slerp(mats, mats_t, 0.5, shortest=False).shape)
 ```
@@ -271,8 +271,8 @@ R0 = np.eye(3)
 R1 = euler_to_matrix([0.0, 0.0, np.radians(90)], XYZ)[0, :3, :3]
 print(matrix_weighted_rotational([R0, R1], [0.5, 0.5]))       # 3x3, halfway
 
-M0 = matrix_identity(1)[0]
-M1 = euler_to_matrix([0.0, 0.0, np.radians(90)], XYZ)[0].copy()
+M0        = matrix_identity(1)[0]
+M1        = euler_to_matrix([0.0, 0.0, np.radians(90)], XYZ)[0].copy()
 M1[3, :3] = [10.0, 0.0, 0.0]
 print(matrix_weighted_transformation([M0, M1], [1.0, 1.0]))                     # weights normalised for you
 print(len(matrix_weighted_transformation([M0, M1], [1.0, 1.0], flatten=True)))  # 16
@@ -390,7 +390,7 @@ import numpy as np
 from transforms import quaternion_random, quaternion_to_matrix
 from transforms import quaternion_exp, quaternion_log
 
-Q      = quaternion_random(4, seed=12345)
+Q = quaternion_random(4, seed=12345)
 
 rotvec = quaternion_log(Q)                       # (4, 3)
 assert np.allclose(quaternion_to_matrix(quaternion_exp(rotvec)), quaternion_to_matrix(Q))
@@ -767,7 +767,7 @@ A length-0 input raises for the same reason, rather than being skipped.
   import numpy as np
   from transforms import XYZ, euler_to_matrix, matrix_decompose
 
-  M = euler_to_matrix([0.0, 0.0, np.radians(45)], XYZ)[0].copy()
+  M         = euler_to_matrix([0.0, 0.0, np.radians(45)], XYZ)[0].copy()
   M[:3, :3] = np.diag([2.0, 3.0, 4.0]) @ M[:3, :3]
   _, _, s = matrix_decompose(M)
   print(np.diag(s)[:3])                           # [4, 3, 2] -- sorted, not per-axis

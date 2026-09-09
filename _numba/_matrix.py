@@ -38,28 +38,28 @@ def _matrix_to_quaternion(matrix):
         trace = matrix[i, 0, 0] + matrix[i, 1, 1] + matrix[i, 2, 2]
 
         if trace > 0.0:
-            s = 0.5 / (trace + 1.0) ** 0.5
+            s          = 0.5 / (trace + 1.0) ** 0.5
             quat[i, 0] = (matrix[i, 1, 2] - matrix[i, 2, 1]) * s
             quat[i, 1] = (matrix[i, 2, 0] - matrix[i, 0, 2]) * s
             quat[i, 2] = (matrix[i, 0, 1] - matrix[i, 1, 0]) * s
             quat[i, 3] = 0.25 / s
 
         elif matrix[i, 0, 0] > matrix[i, 1, 1] and matrix[i, 0, 0] > matrix[i, 2, 2]:
-            s = 2.0 * (1.0 + matrix[i, 0, 0] - matrix[i, 1, 1] - matrix[i, 2, 2]) ** 0.5
+            s          = 2.0 * (1.0 + matrix[i, 0, 0] - matrix[i, 1, 1] - matrix[i, 2, 2]) ** 0.5
             quat[i, 0] = 0.25 * s
             quat[i, 1] = (matrix[i, 1, 0] + matrix[i, 0, 1]) / s
             quat[i, 2] = (matrix[i, 2, 0] + matrix[i, 0, 2]) / s
             quat[i, 3] = (matrix[i, 1, 2] - matrix[i, 2, 1]) / s
 
         elif matrix[i, 1, 1] > matrix[i, 2, 2]:
-            s = 2.0 * (1.0 + matrix[i, 1, 1] - matrix[i, 0, 0] - matrix[i, 2, 2]) ** 0.5
+            s          = 2.0 * (1.0 + matrix[i, 1, 1] - matrix[i, 0, 0] - matrix[i, 2, 2]) ** 0.5
             quat[i, 0] = (matrix[i, 1, 0] + matrix[i, 0, 1]) / s
             quat[i, 1] = 0.25 * s
             quat[i, 2] = (matrix[i, 2, 1] + matrix[i, 1, 2]) / s
             quat[i, 3] = (matrix[i, 2, 0] - matrix[i, 0, 2]) / s
 
         else:
-            s = 2.0 * (1.0 + matrix[i, 2, 2] - matrix[i, 0, 0] - matrix[i, 1, 1]) ** 0.5
+            s          = 2.0 * (1.0 + matrix[i, 2, 2] - matrix[i, 0, 0] - matrix[i, 1, 1]) ** 0.5
             quat[i, 0] = (matrix[i, 2, 0] + matrix[i, 0, 2]) / s
             quat[i, 1] = (matrix[i, 2, 1] + matrix[i, 1, 2]) / s
             quat[i, 2] = 0.25 * s
@@ -344,7 +344,7 @@ def _matrix_to_euler(matrix, axes):
             m_[jj, 2] = matrix[ii, 2, jj] / z
 
         if s:
-            yy = (m_[i, j] ** 2 + m_[i, k] ** 2) ** 0.5
+            yy           = (m_[i, j] ** 2 + m_[i, k] ** 2) ** 0.5
             euler[ii, 1] = atan2(yy, m_[i, i])
 
             if yy > EPSILON:

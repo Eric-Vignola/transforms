@@ -55,11 +55,11 @@ class TestVector(unittest.TestCase):
         self.assertEqual(allclose(mag0, mag1), True)
 
     def testLerp(self):
-        V0    = vector_random(10**6, RANDOM_SEED, normalize=False)
-        V1    = vector_random(10**6, RANDOM_SEED_TWO, normalize=False)
-        w     = np.random.random(10**6)
+        V0 = vector_random(10**6, RANDOM_SEED, normalize=False)
+        V1 = vector_random(10**6, RANDOM_SEED_TWO, normalize=False)
+        w  = np.random.random(10**6)
 
-        V     = vector_lerp(V0, V1, w)
+        V  = vector_lerp(V0, V1, w)
 
         mag0  = vector_magnitude(V1 - V0)
         mag1  = vector_magnitude(V - V0)
@@ -93,10 +93,10 @@ class TestVector(unittest.TestCase):
         self.assertEqual(allclose(dot0, dot1), True)
 
     def testCross(self):
-        V0     = vector_random(10**6, RANDOM_SEED, normalize=True)
-        V1     = vector_random(10**6, RANDOM_SEED_TWO, normalize=True)
-        V0     = np.random.random((10**6, 3))
-        V1     = np.random.random((10**6, 3))
+        V0 = vector_random(10**6, RANDOM_SEED, normalize=True)
+        V1 = vector_random(10**6, RANDOM_SEED_TWO, normalize=True)
+        V0 = np.random.random((10**6, 3))
+        V1 = np.random.random((10**6, 3))
 
         cross0 = vector_cross(V0, V1)
         cross1 = np.cross(V0, V1)

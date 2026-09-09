@@ -231,7 +231,7 @@ class TestBroadcastSemantics(unittest.TestCase):
         # function rather than trusting a sample. ``_vector_cross`` shipped
         # with exactly such a signature.
         import transforms as tr
-        from transforms.main import (
+        from transforms import (
             quaternion_intermediate,
             quaternion_nlerp,
             quaternion_squad,

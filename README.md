@@ -78,10 +78,6 @@ Rotate orders and axis indices are exported as constants:
 
     XYZ  YZX  ZXY  XZY  YXZ  ZYX          X  Y  Z
 
-Five of the above -- `quaternion_log`, `quaternion_exp`, `quaternion_nlerp`,
-`quaternion_intermediate` and `quaternion_squad` -- are only reachable from
-`transforms.main`, not from the package root.
-
 
 License
 -------

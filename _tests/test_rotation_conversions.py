@@ -23,7 +23,7 @@ from transforms import (
     quaternion_to_euler,
     quaternion_to_matrix,
 )
-from transforms.main import quaternion_nlerp
+from transforms import quaternion_nlerp
 
 EPSILON = np.finfo(np.float32).eps
 

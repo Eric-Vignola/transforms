@@ -95,8 +95,8 @@ def quaternion_slerp(quat0, quat1, weight=0.5, shortest=True):
     """
     from transforms._numba._quaternion import _quaternion_slerp
 
-    quat0  = _set_dimension(quat0, 2)
-    quat1  = _set_dimension(quat1, 2)
+    quat0  = _set_dimension(quat0,  2)
+    quat1  = _set_dimension(quat1,  2)
     weight = _set_dimension(weight, 1)
 
     quat0, quat1, weight = _match_depth(quat0, quat1, weight)
@@ -288,8 +288,8 @@ def quaternion_nlerp(quat0, quat1, weight=0.5, shortest=True):
     """
     from transforms._numba._quaternion import _quaternion_nlerp
 
-    quat0  = _set_dimension(quat0, 2)
-    quat1  = _set_dimension(quat1, 2)
+    quat0  = _set_dimension(quat0,  2)
+    quat1  = _set_dimension(quat1,  2)
     weight = _set_dimension(weight, 1)
     quat0, quat1, weight = _match_depth(quat0, quat1, weight)
 
@@ -320,7 +320,7 @@ def quaternion_intermediate(quat_prev, quat_cur, quat_next):
     )
 
     quat_prev = _set_dimension(quat_prev, 2)
-    quat_cur  = _set_dimension(quat_cur, 2)
+    quat_cur  = _set_dimension(quat_cur,  2)
     quat_next = _set_dimension(quat_next, 2)
     quat_prev, quat_cur, quat_next = _match_depth(quat_prev, quat_cur, quat_next)
 
@@ -356,11 +356,11 @@ def quaternion_squad(quat0, control0, control1, quat1, weight=0.5):
     Returns:
         ``(N, 4)`` unit quaternions.
     """
-    quat0    = _set_dimension(quat0, 2)
+    quat0    = _set_dimension(quat0,    2)
     control0 = _set_dimension(control0, 2)
     control1 = _set_dimension(control1, 2)
-    quat1    = _set_dimension(quat1, 2)
-    weight   = _set_dimension(weight, 1)
+    quat1    = _set_dimension(quat1,    2)
+    weight   = _set_dimension(weight,   1)
     quat0, control0, control1, quat1, weight = _match_depth(
         quat0, control0, control1, quat1, weight
     )
@@ -748,7 +748,7 @@ def euler_slerp(euler0, euler1, weight=0.5, axes0=XYZ, axes1=XYZ, axes=XYZ):
     weight = _set_dimension(weight, 1)
     axes0  = _set_dimension(axes0, 1, dtype=np.int32)
     axes1  = _set_dimension(axes1, 1, dtype=np.int32)
-    axes   = _set_dimension(axes, 1, dtype=np.int32)
+    axes   = _set_dimension(axes,  1, dtype=np.int32)
 
     euler0, euler1, weight, axes0, axes1, axes = _match_depth(
         euler0, euler1, weight, axes0, axes1, axes
@@ -1011,7 +1011,7 @@ def vector_slerp(vector0, vector1, weight=0.5):
 
     vector0 = _set_dimension(vector0, 2)
     vector1 = _set_dimension(vector1, 2)
-    weight  = _set_dimension(weight, 1)
+    weight  = _set_dimension(weight,  1)
     vector0, vector1, weight = _match_depth(vector0, vector1, weight)
 
     return _vector_slerp(vector0, vector1, weight)
@@ -1026,7 +1026,7 @@ def vector_lerp(vector0, vector1, weight=0.5):
 
     vector0 = _set_dimension(vector0, 2)
     vector1 = _set_dimension(vector1, 2)
-    weight  = _set_dimension(weight, 1)
+    weight  = _set_dimension(weight,  1)
     vector0, vector1, weight = _match_depth(vector0, vector1, weight)
 
     return np.nan_to_num(_vector_lerp(vector0, vector1, weight))

@@ -159,8 +159,8 @@ class TestLegalShapes(unittest.TestCase):
         V0 = vector_random(5, RANDOM_SEED)
         V1 = vector_random(1, RANDOM_SEED_TWO)
 
-        self.assertEqual(vector_dot(V0, V1).shape, (5,))
-        self.assertEqual(vector_dot(V1, V0).shape, (5,))
+        self.assertEqual(vector_dot(V0, V1).shape,   (5,))
+        self.assertEqual(vector_dot(V1, V0).shape,   (5,))
         self.assertEqual(vector_angle(V0, V1).shape, (5,))
 
     def testBareInputIsPromoted(self):
@@ -319,14 +319,14 @@ class TestBroadcastSemantics(unittest.TestCase):
                     )
 
     def testMatchDepthRules(self):
-        five = _set_dimension(vector_random(5, RANDOM_SEED), 2)
+        five = _set_dimension(vector_random(5, RANDOM_SEED),     2)
         one  = _set_dimension(vector_random(1, RANDOM_SEED_TWO), 2)
         two  = _set_dimension(vector_random(2, RANDOM_SEED_TWO), 2)
 
-        self.assertEqual([len(d) for d in _match_depth(five, one)], [5, 5])
-        self.assertEqual([len(d) for d in _match_depth(one, five)], [5, 5])
+        self.assertEqual([len(d) for d in _match_depth(five, one)],  [5, 5])
+        self.assertEqual([len(d) for d in _match_depth(one, five)],  [5, 5])
         self.assertEqual([len(d) for d in _match_depth(five, five)], [5, 5])
-        self.assertEqual([len(d) for d in _match_depth(one, one)], [1, 1])
+        self.assertEqual([len(d) for d in _match_depth(one, one)],   [1, 1])
 
         with self.assertRaises(ValueError):
             _match_depth(five, two)

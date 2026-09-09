@@ -217,8 +217,8 @@ def _quaternion_log(quat):
             out[i, 1] = 0.0
             out[i, 2] = 0.0
         else:
-            theta = atan2(vnorm, quat[i, 3])
-            scale = theta / vnorm
+            theta     = atan2(vnorm, quat[i, 3])
+            scale     = theta / vnorm
             out[i, 0] = quat[i, 0] * scale
             out[i, 1] = quat[i, 1] * scale
             out[i, 2] = quat[i, 2] * scale
@@ -244,7 +244,7 @@ def _quaternion_exp(rvec):
             out[i, 2] = 0.0
             out[i, 3] = 1.0
         else:
-            s = sin(theta) / theta
+            s         = sin(theta) / theta
             out[i, 0] = rvec[i, 0] * s
             out[i, 1] = rvec[i, 1] * s
             out[i, 2] = rvec[i, 2] * s

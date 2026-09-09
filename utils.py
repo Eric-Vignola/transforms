@@ -197,7 +197,7 @@ def run_tests(
     root          = f"{os.path.basename(package_root)}._tests."
     loader        = unittest.TestLoader()
 
-    stream        = _encoding_safe(sys.stderr)   # resolved now, so an installed stderr tee is seen
+    stream = _encoding_safe(sys.stderr)   # resolved now, so an installed stderr tee is seen
 
     if target is None:
         targets: list[str] = []

@@ -12,12 +12,12 @@ def _axis_angle_to_quaternion(axis, angle):
     for i in prange(axis.shape[0]):
         axis_ = np.empty(3, dtype=axis.dtype)
 
-        mag   = (axis[i, 0] ** 2 + axis[i, 1] ** 2 + axis[i, 2] ** 2) ** 0.5
-        axis_[0] = axis[i, 0] / mag
-        axis_[1] = axis[i, 1] / mag
-        axis_[2] = axis[i, 2] / mag
+        mag        = (axis[i, 0] ** 2 + axis[i, 1] ** 2 + axis[i, 2] ** 2) ** 0.5
+        axis_[0]   = axis[i, 0] / mag
+        axis_[1]   = axis[i, 1] / mag
+        axis_[2]   = axis[i, 2] / mag
 
-        s = sin(angle[i] / 2)
+        s          = sin(angle[i] / 2)
         quat[i, 0] = axis_[0] * s
         quat[i, 1] = axis_[1] * s
         quat[i, 2] = axis_[2] * s
@@ -37,19 +37,19 @@ def _axis_angle_to_matrix(axis, angle):
         cos_    = cos(angle[i])
         inv_cos = 1 - cos_
 
-        mag     = (axis[i, 0] ** 2 + axis[i, 1] ** 2 + axis[i, 2] ** 2) ** 0.5
-        u       = axis[i, 0] / mag
-        v       = axis[i, 1] / mag
-        w       = axis[i, 2] / mag
-        uv      = u * v
-        uw      = u * w
-        vw      = v * w
-        usin    = u * sin_
-        vsin    = v * sin_
-        wsin    = w * sin_
-        u2      = u**2
-        v2      = v**2
-        w2      = w**2
+        mag  = (axis[i, 0] ** 2 + axis[i, 1] ** 2 + axis[i, 2] ** 2) ** 0.5
+        u    = axis[i, 0] / mag
+        v    = axis[i, 1] / mag
+        w    = axis[i, 2] / mag
+        uv   = u * v
+        uw   = u * w
+        vw   = v * w
+        usin = u * sin_
+        vsin = v * sin_
+        wsin = w * sin_
+        u2   = u**2
+        v2   = v**2
+        w2   = w**2
 
         matrix[i, 0, 0] = u2 + ((v2 + w2) * cos_)
         matrix[i, 0, 1] = uv * inv_cos + (wsin)

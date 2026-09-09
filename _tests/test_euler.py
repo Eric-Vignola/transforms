@@ -72,7 +72,7 @@ class TestEulerFilter(unittest.TestCase):
 
     def flip(self, euler, axes):
         """the other representation of the same rotation"""
-        out = np.array(euler) + np.pi
+        out                         = np.array(euler) + np.pi
         out[..., MIDDLE_AXIS[axes]] = np.pi - np.array(euler)[..., MIDDLE_AXIS[axes]]
         return out
 
@@ -102,8 +102,8 @@ class TestEulerFilter(unittest.TestCase):
 
     def testReflectingYAlwaysBreaksFourOfTheOrders(self):
         """guards the table: y is only the middle axis of xyz and zyx"""
-        ea    = euler_random(1000, RANDOM_SEED)
-        naive = np.array(ea) + np.pi
+        ea            = euler_random(1000, RANDOM_SEED)
+        naive         = np.array(ea) + np.pi
         naive[..., 1] = np.pi - np.array(ea)[..., 1]
         for axes in range(6):
             matches = np.allclose(
@@ -153,7 +153,7 @@ class TestEulerFilter(unittest.TestCase):
 
     def testCannotRecoverMoreThanHalfATurnPerFrame(self):
         """pins the aliasing limit, which maya's filterCurve shares"""
-        authored = np.zeros((11, 3))
+        authored       = np.zeros((11, 3))
         authored[:, 0] = np.radians(np.arange(11) * 240.0)
 
         filtered = euler_filter(authored, 0)
@@ -167,7 +167,7 @@ class TestEulerFilter(unittest.TestCase):
         )
 
     def testLeavesSlowerAuthoredSpinsAlone(self):
-        authored = np.zeros((11, 3))
+        authored       = np.zeros((11, 3))
         authored[:, 0] = np.radians(np.arange(11) * 179.0)
         self.assertTrue(np.allclose(euler_filter(authored, 0), authored, atol=1e-12))
 
@@ -201,7 +201,7 @@ class TestEulerFilter(unittest.TestCase):
         ea = euler_random(20, RANDOM_SEED)
         ea.setflags(write=False)
 
-        filtered = euler_filter(ea, 0)
+        filtered       = euler_filter(ea, 0)
         filtered[0, 0] = 1.0
 
         self.assertEqual(filtered[0, 0], 1.0)

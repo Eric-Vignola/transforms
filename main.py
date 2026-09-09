@@ -543,9 +543,9 @@ def matrix_interpolate(matrix0, matrix1, weight=0.5, shortest=True):
         sign = dot >= 0.0
     q1[sign] = -q1[sign]
 
-    matrix = _quaternion_to_matrix(_quaternion_slerp(q0, q1, weight))
+    matrix   = _quaternion_to_matrix(_quaternion_slerp(q0, q1, weight))
 
-    scale  = _vector_lerp(scale0, scale1, weight)
+    scale = _vector_lerp(scale0, scale1, weight)
     matrix[:, 0, :3] *= scale[:, 0][:, None]
     matrix[:, 1, :3] *= scale[:, 1][:, None]
     matrix[:, 2, :3] *= scale[:, 2][:, None]
@@ -605,14 +605,14 @@ def matrix_decompose(
     translation    = matrix[3, :3]
     rotation_scale = matrix[:3, :3]
     U, S, Vt = np.linalg.svd(rotation_scale)
-    rotation_matrix    = np.dot(U, Vt)
-    scale_matrix       = np.diag(S)
-    translation_matrix = np.eye(4)
-    translation_matrix[3, :3] = translation
-    full_rotation_matrix = np.eye(4)
+    rotation_matrix              = np.dot(U, Vt)
+    scale_matrix                 = np.diag(S)
+    translation_matrix           = np.eye(4)
+    translation_matrix[3, :3]    = translation
+    full_rotation_matrix         = np.eye(4)
     full_rotation_matrix[:3, :3] = rotation_matrix
-    full_scale_matrix = np.eye(4)
-    full_scale_matrix[:3, :3] = scale_matrix
+    full_scale_matrix            = np.eye(4)
+    full_scale_matrix[:3, :3]    = scale_matrix
     return translation_matrix, full_rotation_matrix, full_scale_matrix
 
 
@@ -668,17 +668,17 @@ def matrix_weighted_transformation(
         rotation_matrices.append(rotation_matrix[:3, :3])
         weight = weights_normalized[i]
         weighted_translation += weight * np.array(translation_matrix[3, :3])
-        weighted_scale += weight * np.array(scale_matrix[:3, :3])
+        weighted_scale       += weight * np.array(scale_matrix[:3, :3])
 
     weighted_rotation = matrix_weighted_rotational(
         rotation_matrices, weights_normalized
     )
-    scale_matrix  = np.eye(4)
-    result_matrix = np.eye(4)
+    scale_matrix          = np.eye(4)
+    result_matrix         = np.eye(4)
     result_matrix[:3, :3] = weighted_rotation
-    scale_matrix[:3, :3] = weighted_scale
+    scale_matrix[:3, :3]  = weighted_scale
     result_matrix[:3, :3] = np.dot(weighted_rotation, weighted_scale)
-    result_matrix[3, :3] = weighted_translation
+    result_matrix[3, :3]  = weighted_translation
 
     if flatten:
         result_matrix = matrix_flatten(result_matrix)
@@ -826,12 +826,12 @@ def euler_filter(euler, axes):
     middle = MAYA_EA[per_curve][:, 1]
     rows   = np.arange(count)
 
-    out    = curves.copy()
+    out = curves.copy()
     for f in range(1, frames):
         previous = out[f - 1]
         current  = curves[f]
 
-        flipped  = current + np.pi
+        flipped               = current + np.pi
         flipped[rows, middle] = np.pi - current[rows, middle]
 
         # both candidates slide onto the turn nearest the previous frame,
@@ -840,7 +840,7 @@ def euler_filter(euler, axes):
         # the pose moves more than about 30 degrees in a frame
         candidates = np.stack((current, flipped))
         candidates += 2.0 * np.pi * np.round((previous - candidates) / (2.0 * np.pi))
-        cost = np.abs(candidates - previous).sum(axis=-1)
+        cost   = np.abs(candidates - previous).sum(axis=-1)
         out[f] = candidates[np.argmin(cost, axis=0), rows]
 
     return out.reshape(shape)

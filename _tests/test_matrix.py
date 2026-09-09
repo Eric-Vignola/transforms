@@ -93,23 +93,23 @@ class TestMatrix(unittest.TestCase):
         self.assertEqual(allclose(z, ones), True)
 
     def testLocal(self):
-        M = matrix_random(10**6, RANDOM_SEED)
+        M           = matrix_random(10**6, RANDOM_SEED)
         M[:, 3, :3] = np.random.random((10**6, 3))
 
-        P = matrix_identity(10**6)
+        P           = matrix_identity(10**6)
         P[:, 3, :3] = np.random.random((10**6, 3))
 
-        L     = matrix_local(M, P)
+        L = matrix_local(M, P)
 
         delta = M[:, 3, :3] - P[:, 3, :3]
 
         self.assertEqual(allclose(L[:, 3, :3], delta), True)
 
     def testMultiply(self):
-        M0 = matrix_identity(10**6)
+        M0           = matrix_identity(10**6)
         M0[:, 3, :3] = np.random.random((10**6, 3))
 
-        M1 = matrix_identity(10**6)
+        M1           = matrix_identity(10**6)
         M1[:, 3, :3] = np.random.random((10**6, 3))
 
         test = matrix_multiply(M1, M0)
@@ -117,7 +117,7 @@ class TestMatrix(unittest.TestCase):
         self.assertEqual(allclose(test[:, 3, :3], M0[:, 3, :3] + M1[:, 3, :3]), True)
 
     def testPoint(self):
-        M0 = matrix_identity(10**6)
+        M0           = matrix_identity(10**6)
         M0[:, 3, :3] = np.random.random((10**6, 3))
 
         p    = np.random.random((10**6, 3))

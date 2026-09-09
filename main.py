@@ -7,7 +7,6 @@ names** that mirror the underlying compiled kernels.
 Old API (the split ``vector`` / ``axis`` / ``euler`` / ``matrix`` /
 ``quaternion`` modules, dropped when this package was extracted)::
 
-    from rl.math.transforms import quaternion, matrix, vector
     M = quaternion.to_matrix(q)
     q = matrix.to_quaternion(M)
     P = matrix.point(p, M)

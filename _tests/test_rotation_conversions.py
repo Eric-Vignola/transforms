@@ -30,9 +30,9 @@ EPSILON = np.finfo(np.float32).eps
 # these kernels are njit(fastmath=True); ~1e-5 degrees is the achievable floor
 ANGLE_TOL_DEGREES = 1e-4
 
-RANDOM_SEED = 12345
-ORDERS = (0, 1, 2, 3, 4, 5)  # xyz yzx zxy xzy yxz zyx
-ORDER_NAMES = ("xyz", "yzx", "zxy", "xzy", "yxz", "zyx")
+RANDOM_SEED       = 12345
+ORDERS            = (0, 1, 2, 3, 4, 5)  # xyz yzx zxy xzy yxz zyx
+ORDER_NAMES       = ("xyz", "yzx", "zxy", "xzy", "yxz", "zyx")
 
 # Generated from Maya 2026 via maya.api.OpenMaya MEulerRotation.asQuaternion()
 # euler degrees -> {rotate_order: (qx, qy, qz, qw)}
@@ -180,10 +180,10 @@ MAYA_EULER_TO_QUATERNION = {
 
 def geodesic_degrees(quat0, quat1):
     """Largest angle between two stacks of quaternions, ignoring q/-q sign."""
-    a = np.asarray(quat0, dtype=float).reshape(-1, 4)
-    b = np.asarray(quat1, dtype=float).reshape(-1, 4)
-    a = a / np.linalg.norm(a, axis=1, keepdims=True)
-    b = b / np.linalg.norm(b, axis=1, keepdims=True)
+    a   = np.asarray(quat0, dtype=float).reshape(-1, 4)
+    b   = np.asarray(quat1, dtype=float).reshape(-1, 4)
+    a   = a / np.linalg.norm(a, axis=1, keepdims=True)
+    b   = b / np.linalg.norm(b, axis=1, keepdims=True)
     dot = np.abs(np.sum(a * b, axis=1)).clip(0.0, 1.0)
     return float(np.degrees(2.0 * np.arccos(dot)).max())
 
@@ -197,7 +197,7 @@ class TestMayaParity(unittest.TestCase):
         for euler_degrees, per_order in MAYA_EULER_TO_QUATERNION.items():
             radians = np.radians([euler_degrees])
             for order, expected in per_order.items():
-                got = euler_to_quaternion(radians, axes=order)
+                got   = euler_to_quaternion(radians, axes=order)
                 error = geodesic_degrees(got, [expected])
                 self.assertLess(
                     error,
@@ -228,7 +228,7 @@ class TestMayaParity(unittest.TestCase):
 
 class TestConversionConsistency(unittest.TestCase):
     def setUp(self):
-        self.euler = euler_random(2000, RANDOM_SEED)
+        self.euler      = euler_random(2000, RANDOM_SEED)
         self.quaternion = quaternion_random(2000, RANDOM_SEED)
 
     def test_euler_to_quaternion_agrees_with_matrix_path(self):
@@ -267,7 +267,7 @@ class TestConversionConsistency(unittest.TestCase):
     def test_roundtrip_euler_matrix_euler(self):
         for order in ORDERS:
             matrix = euler_to_matrix(self.euler, axes=order)
-            back = matrix_to_euler(matrix, axes=order)
+            back   = matrix_to_euler(matrix, axes=order)
             self.assertTrue(
                 np.allclose(matrix, euler_to_matrix(back, axes=order), atol=EPSILON),
                 f"order {ORDER_NAMES[order]}",
@@ -278,12 +278,12 @@ class TestConversionConsistency(unittest.TestCase):
         self.assertLess(geodesic_degrees(self.quaternion, back), ANGLE_TOL_DEGREES)
 
     def test_axis_angle_agrees_with_matrix_path(self):
-        rng = np.random.default_rng(RANDOM_SEED)
+        rng  = np.random.default_rng(RANDOM_SEED)
         axis = rng.normal(size=(2000, 3))
         axis /= np.linalg.norm(axis, axis=1, keepdims=True)
-        angle = rng.uniform(-np.pi, np.pi, size=2000)
+        angle  = rng.uniform(-np.pi, np.pi, size=2000)
 
-        quat = axis_angle_to_quaternion(axis, angle)
+        quat   = axis_angle_to_quaternion(axis, angle)
         matrix = axis_angle_to_matrix(axis, angle)
         self.assertLess(
             geodesic_degrees(quat, matrix_to_quaternion(matrix)), ANGLE_TOL_DEGREES
@@ -314,7 +314,7 @@ class TestEulerReorder(unittest.TestCase):
             if target == 0:
                 continue
             moved = euler_reorder(self.euler, from_axes=0, to_axes=target)
-            back = euler_reorder(moved, from_axes=target, to_axes=0)
+            back  = euler_reorder(moved, from_axes=target, to_axes=0)
             self.assertTrue(
                 np.allclose(
                     euler_to_matrix(self.euler, axes=0),
@@ -387,14 +387,14 @@ class TestSlerpBehaviour(unittest.TestCase):
         )
 
     def test_shortest_arc_is_never_longer_than_the_other(self):
-        short = quaternion_slerp(self.quat0, self.quat1, weight=0.5, shortest=True)
-        other = quaternion_slerp(self.quat0, self.quat1, weight=0.5, shortest=False)
+        short    = quaternion_slerp(self.quat0, self.quat1, weight=0.5, shortest=True)
+        other    = quaternion_slerp(self.quat0, self.quat1, weight=0.5, shortest=False)
         to_short = geodesic_degrees(self.quat0, short)
         to_other = geodesic_degrees(self.quat0, other)
         self.assertLessEqual(to_short, to_other + ANGLE_TOL_DEGREES)
 
     def test_symmetry(self):
-        forward = quaternion_slerp(self.quat0, self.quat1, weight=0.25, shortest=True)
+        forward  = quaternion_slerp(self.quat0, self.quat1, weight=0.25, shortest=True)
         backward = quaternion_slerp(self.quat1, self.quat0, weight=0.75, shortest=True)
         self.assertLess(geodesic_degrees(forward, backward), ANGLE_TOL_DEGREES)
 

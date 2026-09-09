@@ -59,21 +59,21 @@ class TestAxis(unittest.TestCase):
 
     def test_angle_to_quaternion_y_axis(self):
         """Test axis_angle_to_quaternion with rotation around Y axis"""
-        Q = axis_angle_to_quaternion([0, 1, 0], np.radians(90))
+        Q        = axis_angle_to_quaternion([0, 1, 0], np.radians(90))
         expected = np.array([[0.0, 0.70710678, 0.0, 0.70710678]])
         self.assertTrue(allclose(Q, expected, atol=1e-6))
 
     def test_angle_to_quaternion_z_axis(self):
         """Test axis_angle_to_quaternion with rotation around Z axis"""
-        Q = axis_angle_to_quaternion([0, 0, 1], np.radians(90))
+        Q        = axis_angle_to_quaternion([0, 0, 1], np.radians(90))
         expected = np.array([[0.0, 0.0, 0.70710678, 0.70710678]])
         self.assertTrue(allclose(Q, expected, atol=1e-6))
 
     def test_angle_to_quaternion_multiple(self):
         """Test axis_angle_to_quaternion with multiple axes and angles"""
-        axes = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+        axes   = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         angles = np.array([0, np.radians(90), np.radians(180)])
-        Q = axis_angle_to_quaternion(axes, angles)
+        Q      = axis_angle_to_quaternion(axes, angles)
 
         # Should return 3 quaternions
         self.assertEqual(Q.shape, (3, 4))
@@ -90,22 +90,22 @@ class TestAxis(unittest.TestCase):
 
         # 90 degree rotation around X should swap Y and Z with sign change
         # Applying to [0, 1, 0] should give [0, 0, 1]
-        point = np.array([0, 1, 0, 1])
-        result = M[0] @ point
+        point    = np.array([0, 1, 0, 1])
+        result   = M[0] @ point
         expected = np.array([0, 0, 1, 1])
         self.assertTrue(allclose(result, expected, atol=1e-6))
 
     def test_angle_to_matrix_identity(self):
         """Test axis_angle_to_matrix with zero rotation"""
-        M = axis_angle_to_matrix([1, 0, 0], 0)
+        M        = axis_angle_to_matrix([1, 0, 0], 0)
         identity = np.eye(4)
         self.assertTrue(allclose(M[0], identity))
 
     def test_angle_to_matrix_multiple(self):
         """Test axis_angle_to_matrix with multiple axes and angles"""
-        axes = np.array([[1, 0, 0], [0, 1, 0]])
+        axes   = np.array([[1, 0, 0], [0, 1, 0]])
         angles = np.array([np.radians(45), np.radians(90)])
-        M = axis_angle_to_matrix(axes, angles)
+        M      = axis_angle_to_matrix(axes, angles)
 
         # Should return 2 matrices
         self.assertEqual(M.shape, (2, 4, 4))
@@ -128,9 +128,9 @@ class TestAxis(unittest.TestCase):
 
     def test_angle_to_euler_multiple(self):
         """Test axis_angle_to_euler with multiple axes and angles"""
-        axes = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+        axes   = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         angles = np.array([np.radians(45), np.radians(90), np.radians(180)])
-        eu = axis_angle_to_euler(axes, angles)
+        eu     = axis_angle_to_euler(axes, angles)
 
         # Should return 3 euler angle sets
         self.assertEqual(eu.shape, (3, 3))
@@ -161,7 +161,7 @@ class TestAxis(unittest.TestCase):
         M = axis_angle_to_matrix([0, 1, 0], np.radians(180))
 
         # 180 degree rotation around Y should flip X and Z
-        point = np.array([1, 0, 0, 1])
-        result = M[0] @ point
+        point    = np.array([1, 0, 0, 1])
+        result   = M[0] @ point
         expected = np.array([-1, 0, 0, 1])
         self.assertTrue(allclose(result, expected, atol=1e-6))

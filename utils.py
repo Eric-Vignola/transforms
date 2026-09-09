@@ -20,10 +20,10 @@ import numpy as np
 
 
 def _set_dimension(
-    data: Any,
-    ndim: int = 1,
-    dtype: np.ndarray = np.float64,
-    reshape_matrix: bool = False,
+    data:           Any,
+    ndim:           int        = 1,
+    dtype:          np.ndarray = np.float64,
+    reshape_matrix: bool       = False,
 ) -> np.ndarray:
     """Sets input data to expected dimension"""
     data = np.asarray(data, dtype=dtype)
@@ -53,7 +53,7 @@ def _match_depth(*data) -> list:
     not done here. This matches :mod:`numpy` and
     :class:`scipy.spatial.transform.Rotation`.
     """
-    counts = [len(d) for d in data]
+    counts  = [len(d) for d in data]
     highest = max(counts)
 
     if any(c not in (1, highest) for c in counts):
@@ -94,9 +94,9 @@ class _ProgressResult(unittest.TextTestResult):
 def _run(suite, stream, verbosity, failfast):
     """Run ``suite`` with the progress-counting result class."""
     return unittest.TextTestRunner(
-        stream=stream,
-        verbosity=verbosity,
-        failfast=failfast,
+        stream    = stream,
+        verbosity = verbosity,
+        failfast  = failfast,
         resultclass=functools.partial(
             _ProgressResult, total=suite.countTestCases()
         ),
@@ -135,9 +135,9 @@ def _encoding_safe(stream):
 
 
 def run_tests(
-    target: str | Sequence[str] | None = None,
-    verbosity: int = 2,
-    failfast: bool = False,
+    target:    str | Sequence[str] | None = None,
+    verbosity: int                        = 2,
+    failfast:  bool                       = False,
 ) -> unittest.TestResult:
     """
     runs the package's unit test suite
@@ -184,7 +184,7 @@ def run_tests(
         >>> run_tests(verbosity=1, failfast=True)
     """
     package_root = os.path.dirname(os.path.abspath(__file__))
-    start_dir = os.path.join(package_root, "_tests")
+    start_dir    = os.path.join(package_root, "_tests")
 
     if not os.path.isdir(start_dir):
         raise FileNotFoundError(f"no test directory at {start_dir!r}")
@@ -194,10 +194,10 @@ def run_tests(
     # imports its own siblings by that dotted path, so pointing this at
     # ``_tests`` would break them.
     top_level_dir = os.path.dirname(package_root)
-    root = f"{os.path.basename(package_root)}._tests."
-    loader = unittest.TestLoader()
+    root          = f"{os.path.basename(package_root)}._tests."
+    loader        = unittest.TestLoader()
 
-    stream = _encoding_safe(sys.stderr)   # resolved now, so an installed stderr tee is seen
+    stream        = _encoding_safe(sys.stderr)   # resolved now, so an installed stderr tee is seen
 
     if target is None:
         targets: list[str] = []
@@ -238,7 +238,7 @@ def run_tests(
 
         resolved = None
         for candidate in candidates:
-            mark = len(loader.errors)
+            mark  = len(loader.errors)
             found = loader.loadTestsFromName(candidate)
             if len(loader.errors) == mark:
                 resolved = found

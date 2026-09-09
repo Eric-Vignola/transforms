@@ -92,9 +92,9 @@ print(np.degrees(matrix_to_euler(one, [XYZ, YZX, ZXY, XZY, YXZ, ZYX])))   # (6, 
 ```python
 from transforms import matrix_identity, matrix_random
 
-I = matrix_identity(3)                                  # (3, 4, 4)
-R = matrix_random(5, seed=7)                            # rotation only
-RT = matrix_random(5, seed=7, random_position=True)     # + translation in [-1, 1]
+I  = matrix_identity(3)                              # (3, 4, 4)
+R  = matrix_random(5, seed=7)                        # rotation only
+RT = matrix_random(5, seed=7, random_position=True)  # + translation in [-1, 1]
 print(I.shape, R.shape, RT.shape)
 ```
 
@@ -104,10 +104,10 @@ print(I.shape, R.shape, RT.shape)
 import numpy as np
 from transforms import XYZ, euler_to_matrix, matrix_random, matrix_to_euler, matrix_to_quaternion
 
-mats = matrix_random(4, seed=12345)      # (4, 4, 4) rotation only
+mats = matrix_random(4, seed=12345)  # (4, 4, 4) rotation only
 
-ea = matrix_to_euler(mats, XYZ)          # (4, 3) radians
-q = matrix_to_quaternion(mats)           # (4, 4) (i, j, k, w)
+ea   = matrix_to_euler(mats, XYZ)    # (4, 3) radians
+q    = matrix_to_quaternion(mats)    # (4, 4) (i, j, k, w)
 assert np.allclose(euler_to_matrix(ea, XYZ), mats)
 ```
 
@@ -131,9 +131,9 @@ from transforms import (
 
 mats = matrix_random(4, seed=12345)
 
-T = matrix_identity(1)
+T    = matrix_identity(1)
 T[0, 3, :3] = [10.0, 20.0, 30.0]
-Rz = euler_to_matrix([0.0, 0.0, np.radians(90)], XYZ)
+Rz               = euler_to_matrix([0.0, 0.0, np.radians(90)], XYZ)
 
 rotate_then_move = matrix_multiply(Rz, T)
 move_then_rotate = matrix_multiply(T, Rz)
@@ -217,10 +217,10 @@ Per-row weights, and `shortest=False` to take the long way round:
 import numpy as np
 from transforms import matrix_random, matrix_slerp
 
-mats = matrix_random(4, seed=12345)                          # rotation only
-mats_t = matrix_random(4, seed=999, random_position=True)    # with translation
+mats   = matrix_random(4, seed=12345)                      # rotation only
+mats_t = matrix_random(4, seed=999, random_position=True)  # with translation
 
-w = np.linspace(0.0, 1.0, 4)
+w      = np.linspace(0.0, 1.0, 4)
 print(matrix_slerp(mats, mats_t, w).shape)
 print(matrix_slerp(mats, mats_t, 0.5, shortest=False).shape)
 ```
@@ -316,7 +316,7 @@ from transforms import (
     quaternion_sub,
 )
 
-Q = quaternion_random(4, seed=12345)
+Q          = quaternion_random(4, seed=12345)
 identity_q = np.array([[0.0, 0.0, 0.0, 1.0]])
 
 assert np.allclose(quaternion_multiply(identity_q, Q), Q)
@@ -390,7 +390,7 @@ import numpy as np
 from transforms import quaternion_random, quaternion_to_matrix
 from transforms import quaternion_exp, quaternion_log
 
-Q = quaternion_random(4, seed=12345)
+Q      = quaternion_random(4, seed=12345)
 
 rotvec = quaternion_log(Q)                       # (4, 3)
 assert np.allclose(quaternion_to_matrix(quaternion_exp(rotvec)), quaternion_to_matrix(Q))
@@ -429,10 +429,10 @@ from transforms import quaternion_intermediate, quaternion_squad
 
 keys = quaternion_random(4, seed=11)
 
-c0 = quaternion_intermediate(keys[0:1], keys[1:2], keys[2:3])
-c1 = quaternion_intermediate(keys[1:2], keys[2:3], keys[3:4])
+c0   = quaternion_intermediate(keys[0:1], keys[1:2], keys[2:3])
+c1   = quaternion_intermediate(keys[1:2], keys[2:3], keys[3:4])
 
-mid = quaternion_squad(keys[1:2], c0, c1, keys[2:3], 0.5)
+mid  = quaternion_squad(keys[1:2], c0, c1, keys[2:3], 0.5)
 print(mid, np.linalg.norm(mid))                  # unit length
 
 assert np.allclose(quaternion_squad(keys[1:2], c0, c1, keys[2:3], 0.0), keys[1:2])
@@ -461,7 +461,7 @@ Same pose, different rotate order.
 import numpy as np
 from transforms import XYZ, ZYX, euler_reorder, euler_to_matrix
 
-ea = np.radians([[10.0, 20.0, 30.0]])
+ea  = np.radians([[10.0, 20.0, 30.0]])
 
 zyx = euler_reorder(ea, XYZ, ZYX)
 print(np.degrees(zyx))
@@ -506,8 +506,8 @@ sweep = np.array([
     for a in np.linspace(-170.0, 170.0, 48)
 ])
 
-raw_step = np.degrees(np.abs(np.diff(sweep, axis=0)).max())
-clean = euler_filter(sweep, XYZ)
+raw_step   = np.degrees(np.abs(np.diff(sweep, axis=0)).max())
+clean      = euler_filter(sweep, XYZ)
 clean_step = np.degrees(np.abs(np.diff(clean, axis=0)).max())
 
 print(raw_step, "->", clean_step)                # ~180+ -> < 10
@@ -567,7 +567,7 @@ Batched — one axis and one angle per row:
 import numpy as np
 from transforms import axis_angle_to_matrix
 
-axes3 = np.array([[1.0, 0, 0], [0, 1.0, 0], [0, 0, 1.0]])
+axes3  = np.array([[1.0, 0, 0], [0, 1.0, 0], [0, 0, 1.0]])
 angles = np.radians([45.0, 90.0, 180.0])
 print(axis_angle_to_matrix(axes3, angles).shape)     # (3, 4, 4)
 ```
@@ -598,8 +598,8 @@ from transforms import (
     vector_random,
 )
 
-V = vector_random(5, seed=3)                     # (5, 3) in [-1, 1]
-U = vector_random(5, seed=3, normalize=True)     # unit length
+V = vector_random(5, seed=3)                  # (5, 3) in [-1, 1]
+U = vector_random(5, seed=3, normalize=True)  # unit length
 
 assert np.allclose(vector_magnitude(U), 1.0)
 assert np.allclose(vector_normalize(V), V / vector_magnitude(V)[:, None])
@@ -680,9 +680,9 @@ import numpy as np
 from transforms import Y, Z, vector_normalize, vector_to_matrix
 
 # a 3 x 3 grid of points on the XZ plane
-grid = np.array([[x, 0.0, z] for x in (-1.0, 0.0, 1.0) for z in (-1.0, 0.0, 1.0)])
+grid   = np.array([[x, 0.0, z] for x in (-1.0, 0.0, 1.0) for z in (-1.0, 0.0, 1.0)])
 
-aim = vector_normalize(-grid + [0.0, 1e-9, 0.0])
+aim    = vector_normalize(-grid + [0.0, 1e-9, 0.0])
 frames = vector_to_matrix(aim, [0.0, 1.0, 0.0], aim_axis=Z, up_axis=Y)
 print(frames.shape)                              # (9, 4, 4)
 ```
@@ -706,7 +706,7 @@ from transforms import (
     vector_random,
 )
 
-points = vector_random(8, seed=2)                         # (8, 3)
+points     = vector_random(8, seed=2)                         # (8, 3)
 one_matrix = matrix_random(1, seed=4)
 print(matrix_point_multiply(points, one_matrix).shape)    # (8, 3) -- matrix reused
 

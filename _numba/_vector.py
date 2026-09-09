@@ -12,7 +12,7 @@ def _vector_arc(vector0, vector1):
         vector0_ = np.empty(3, dtype=vector0.dtype)
         vector1_ = np.empty(3, dtype=vector0.dtype)
 
-        m = (vector0[i, 0] ** 2 + vector0[i, 1] ** 2 + vector0[i, 2] ** 2) ** 0.5
+        m        = (vector0[i, 0] ** 2 + vector0[i, 1] ** 2 + vector0[i, 2] ** 2) ** 0.5
         if m > 0.0:
             vector0_[0] = vector0[i, 0] / m
             vector0_[1] = vector0[i, 1] / m
@@ -59,8 +59,8 @@ def _vector_slerp(vector0, vector1, weight):
             Y1 = vector1[i, 1] / m
             Z1 = vector1[i, 2] / m
 
-        dot = (X0 * X1) + (Y0 * Y1) + (Z0 * Z1)
-        angle = acos(dot)
+        dot    = (X0 * X1) + (Y0 * Y1) + (Z0 * Z1)
+        angle  = acos(dot)
         sangle = sin(angle)
 
         if sangle > 0.0:
@@ -154,11 +154,11 @@ def _vector_to_matrix(vector0, vector1, aim_axis, up_axis):
         vector0_ = np.empty(3, dtype=vector0.dtype)
         vector1_ = np.empty(3, dtype=vector0.dtype)
 
-        ii = aim_axis[i]
-        jj = up_axis[i]
-        kk = (min(ii, jj) - max(ii, jj) + min(ii, jj)) % 3
+        ii       = aim_axis[i]
+        jj       = up_axis[i]
+        kk       = (min(ii, jj) - max(ii, jj) + min(ii, jj)) % 3
 
-        flip = 0
+        flip     = 0
         if ii == 0 and jj == 2:
             flip = 1
         elif ii == 1 and jj == 0:
@@ -191,9 +191,9 @@ def _vector_to_matrix(vector0, vector1, aim_axis, up_axis):
         matrix[i, 3, 2] = 0.0
         matrix[i, 3, 3] = 1.0
 
-        x = vector0_[1] * vector1_[2] - vector0_[2] * vector1_[1]
-        y = vector0_[2] * vector1_[0] - vector0_[0] * vector1_[2]
-        z = vector0_[0] * vector1_[1] - vector0_[1] * vector1_[0]
+        x  = vector0_[1] * vector1_[2] - vector0_[2] * vector1_[1]
+        y  = vector0_[2] * vector1_[0] - vector0_[0] * vector1_[2]
+        z  = vector0_[0] * vector1_[1] - vector0_[1] * vector1_[0]
 
         na = (vector0_[0] ** 2 + vector0_[1] ** 2 + vector0_[2] ** 2) ** 0.5
         nc = (x**2 + y**2 + z**2) ** 0.5
@@ -234,9 +234,9 @@ def _vector_arc_to_quaternion(vector0, vector1):
     quat = np.empty((vector0.shape[0], 4), dtype=vector0.dtype)
 
     for i in prange(vector0.shape[0]):
-        v0 = np.empty(3, dtype=vector0.dtype)
-        v1 = np.empty(3, dtype=vector0.dtype)
-        h = np.empty(3, dtype=vector0.dtype)
+        v0  = np.empty(3, dtype=vector0.dtype)
+        v1  = np.empty(3, dtype=vector0.dtype)
+        h   = np.empty(3, dtype=vector0.dtype)
 
         mag = (vector0[i, 0] ** 2 + vector0[i, 1] ** 2 + vector0[i, 2] ** 2) ** 0.5
         v0[0] = vector0[i, 0] / mag

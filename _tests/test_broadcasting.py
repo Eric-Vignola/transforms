@@ -40,8 +40,8 @@ from transforms import (
 )
 from transforms.utils import _match_depth, _set_dimension
 
-EPSILON = np.finfo(np.float32).eps
-RANDOM_SEED = 54345
+EPSILON         = np.finfo(np.float32).eps
+RANDOM_SEED     = 54345
 RANDOM_SEED_TWO = 12345
 
 
@@ -203,8 +203,8 @@ class TestBroadcastSemantics(unittest.TestCase):
         self.assertIs(levelled0, V0)
 
     def testExpansionMatchesAMaterialisedCopy(self):
-        V0 = vector_random(5, RANDOM_SEED)
-        V1 = vector_random(1, RANDOM_SEED_TWO)
+        V0       = vector_random(5, RANDOM_SEED)
+        V1       = vector_random(1, RANDOM_SEED_TWO)
         repeated = np.repeat(V1, 5, axis=0)
 
         self.assertTrue(allclose(vector_dot(V0, V1), vector_dot(V0, repeated)))
@@ -292,7 +292,7 @@ class TestBroadcastSemantics(unittest.TestCase):
                 short, full = [], []
                 for index, kind in enumerate(kinds):
                     length = 1 if index == position else size
-                    value = make[kind](length, index + 1)
+                    value  = make[kind](length, index + 1)
                     short.append(value)
                     full.append(
                         np.repeat(value, size, axis=0) if length == 1 else value
@@ -303,7 +303,7 @@ class TestBroadcastSemantics(unittest.TestCase):
                     position,
                     kinds[position],
                 )
-                got = astuple(function(*short))
+                got  = astuple(function(*short))
                 want = astuple(function(*full))
 
                 self.assertEqual(len(got), len(want), where)
@@ -320,8 +320,8 @@ class TestBroadcastSemantics(unittest.TestCase):
 
     def testMatchDepthRules(self):
         five = _set_dimension(vector_random(5, RANDOM_SEED), 2)
-        one = _set_dimension(vector_random(1, RANDOM_SEED_TWO), 2)
-        two = _set_dimension(vector_random(2, RANDOM_SEED_TWO), 2)
+        one  = _set_dimension(vector_random(1, RANDOM_SEED_TWO), 2)
+        two  = _set_dimension(vector_random(2, RANDOM_SEED_TWO), 2)
 
         self.assertEqual([len(d) for d in _match_depth(five, one)], [5, 5])
         self.assertEqual([len(d) for d in _match_depth(one, five)], [5, 5])

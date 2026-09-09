@@ -95,8 +95,8 @@ def quaternion_slerp(quat0, quat1, weight=0.5, shortest=True):
     """
     from transforms._numba._quaternion import _quaternion_slerp
 
-    quat0 = _set_dimension(quat0, 2)
-    quat1 = _set_dimension(quat1, 2)
+    quat0  = _set_dimension(quat0, 2)
+    quat1  = _set_dimension(quat1, 2)
     weight = _set_dimension(weight, 1)
 
     quat0, quat1, weight = _match_depth(quat0, quat1, weight)
@@ -288,8 +288,8 @@ def quaternion_nlerp(quat0, quat1, weight=0.5, shortest=True):
     """
     from transforms._numba._quaternion import _quaternion_nlerp
 
-    quat0 = _set_dimension(quat0, 2)
-    quat1 = _set_dimension(quat1, 2)
+    quat0  = _set_dimension(quat0, 2)
+    quat1  = _set_dimension(quat1, 2)
     weight = _set_dimension(weight, 1)
     quat0, quat1, weight = _match_depth(quat0, quat1, weight)
 
@@ -320,11 +320,11 @@ def quaternion_intermediate(quat_prev, quat_cur, quat_next):
     )
 
     quat_prev = _set_dimension(quat_prev, 2)
-    quat_cur = _set_dimension(quat_cur, 2)
+    quat_cur  = _set_dimension(quat_cur, 2)
     quat_next = _set_dimension(quat_next, 2)
     quat_prev, quat_cur, quat_next = _match_depth(quat_prev, quat_cur, quat_next)
 
-    cur_inv = _quaternion_conjugate(quat_cur)  # unit quats: conjugate == inverse
+    cur_inv  = _quaternion_conjugate(quat_cur)  # unit quats: conjugate == inverse
     rel_next = _quaternion_multiply(cur_inv, quat_next)
     rel_prev = _quaternion_multiply(cur_inv, quat_prev)
 
@@ -356,17 +356,17 @@ def quaternion_squad(quat0, control0, control1, quat1, weight=0.5):
     Returns:
         ``(N, 4)`` unit quaternions.
     """
-    quat0 = _set_dimension(quat0, 2)
+    quat0    = _set_dimension(quat0, 2)
     control0 = _set_dimension(control0, 2)
     control1 = _set_dimension(control1, 2)
-    quat1 = _set_dimension(quat1, 2)
-    weight = _set_dimension(weight, 1)
+    quat1    = _set_dimension(quat1, 2)
+    weight   = _set_dimension(weight, 1)
     quat0, control0, control1, quat1, weight = _match_depth(
         quat0, control0, control1, quat1, weight
     )
 
-    base = quaternion_slerp(quat0, quat1, weight)
-    ctrl = quaternion_slerp(control0, control1, weight)
+    base  = quaternion_slerp(quat0, quat1, weight)
+    ctrl  = quaternion_slerp(control0, control1, weight)
     blend = 2.0 * weight * (1.0 - weight)
     return quaternion_slerp(base, ctrl, blend)
 
@@ -391,7 +391,7 @@ def matrix_to_euler(matrix, axes=XYZ):
     from transforms._numba._matrix import _matrix_to_euler
 
     matrix = _set_dimension(matrix, 3, reshape_matrix=True)
-    axes = _set_dimension(axes, 1, dtype=np.int32)
+    axes   = _set_dimension(axes, 1, dtype=np.int32)
     matrix, axes = _match_depth(matrix, axes)
 
     return _matrix_to_euler(matrix, axes)
@@ -449,7 +449,7 @@ def matrix_point_multiply(point, matrix):
     """
     from transforms._numba._matrix import _matrix_point_multiply
 
-    point = _set_dimension(point, 2)
+    point  = _set_dimension(point, 2)
     matrix = _set_dimension(matrix, 3, reshape_matrix=True)
     point, matrix = _match_depth(point, matrix)
 
@@ -484,11 +484,11 @@ def matrix_slerp(matrix0, matrix1, weight=0.5, shortest=True):
 
     matrix0 = _set_dimension(matrix0, 3, reshape_matrix=True)
     matrix1 = _set_dimension(matrix1, 3, reshape_matrix=True)
-    weight = _set_dimension(weight, 1)
+    weight  = _set_dimension(weight, 1)
     matrix0, matrix1, weight = _match_depth(matrix0, matrix1, weight)
 
-    q0 = _matrix_to_quaternion(matrix0)
-    q1 = _matrix_to_quaternion(matrix1)
+    q0  = _matrix_to_quaternion(matrix0)
+    q1  = _matrix_to_quaternion(matrix1)
 
     dot = np.einsum("...i,...i", q0, q1)
     if shortest:
@@ -515,15 +515,15 @@ def matrix_interpolate(matrix0, matrix1, weight=0.5, shortest=True):
 
     matrix0 = _set_dimension(matrix0, 3, reshape_matrix=True)
     matrix1 = _set_dimension(matrix1, 3, reshape_matrix=True)
-    weight = _set_dimension(weight, 1)
+    weight  = _set_dimension(weight, 1)
     matrix0, matrix1, weight = _match_depth(matrix0, matrix1, weight)
 
     # the scale is divided out in place below
     matrix0 = matrix0.copy()
     matrix1 = matrix1.copy()
 
-    scale0 = np.einsum("...i,...i", matrix0[:, :3, :3], matrix0[:, :3, :3]) ** 0.5
-    scale1 = np.einsum("...i,...i", matrix1[:, :3, :3], matrix1[:, :3, :3]) ** 0.5
+    scale0  = np.einsum("...i,...i", matrix0[:, :3, :3], matrix0[:, :3, :3]) ** 0.5
+    scale1  = np.einsum("...i,...i", matrix1[:, :3, :3], matrix1[:, :3, :3]) ** 0.5
 
     matrix0[:, 0, :3] /= scale0[:, 0][:, None]
     matrix0[:, 1, :3] /= scale0[:, 1][:, None]
@@ -533,8 +533,8 @@ def matrix_interpolate(matrix0, matrix1, weight=0.5, shortest=True):
     matrix1[:, 1, :3] /= scale1[:, 1][:, None]
     matrix1[:, 2, :3] /= scale1[:, 2][:, None]
 
-    q0 = _matrix_to_quaternion(matrix0)
-    q1 = _matrix_to_quaternion(matrix1)
+    q0  = _matrix_to_quaternion(matrix0)
+    q1  = _matrix_to_quaternion(matrix1)
 
     dot = np.einsum("...i,...i", q0, q1)
     if shortest:
@@ -545,7 +545,7 @@ def matrix_interpolate(matrix0, matrix1, weight=0.5, shortest=True):
 
     matrix = _quaternion_to_matrix(_quaternion_slerp(q0, q1, weight))
 
-    scale = _vector_lerp(scale0, scale1, weight)
+    scale  = _vector_lerp(scale0, scale1, weight)
     matrix[:, 0, :3] *= scale[:, 0][:, None]
     matrix[:, 1, :3] *= scale[:, 1][:, None]
     matrix[:, 2, :3] *= scale[:, 2][:, None]
@@ -562,7 +562,7 @@ def matrix_local(matrix, parent_matrix):
     """
     from transforms._numba._matrix import _matrix_inverse, _matrix_multiply
 
-    matrix = _set_dimension(matrix, 3, reshape_matrix=True)
+    matrix        = _set_dimension(matrix, 3, reshape_matrix=True)
     parent_matrix = _set_dimension(parent_matrix, 3, reshape_matrix=True)
     matrix, parent_matrix = _match_depth(matrix, parent_matrix)
 
@@ -578,7 +578,7 @@ def matrix_random(n, seed=None, random_position=False):
 
     np.random.seed(seed)
     euler = np.radians(360 - np.random.random((n, 3)) * 720)
-    M = _euler_to_matrix(euler, np.zeros(euler.shape[0], dtype=np.int32))
+    M     = _euler_to_matrix(euler, np.zeros(euler.shape[0], dtype=np.int32))
     if random_position:
         M[:, 3, :3] = 1 - np.random.random((n, 3)) * 2
     return M
@@ -602,11 +602,11 @@ def matrix_decompose(
     Pure-NumPy SVD; no Numba backing.  Mirrors
     the legacy ``matrix.decompose_matrix_as_matrices``.
     """
-    translation = matrix[3, :3]
+    translation    = matrix[3, :3]
     rotation_scale = matrix[:3, :3]
     U, S, Vt = np.linalg.svd(rotation_scale)
-    rotation_matrix = np.dot(U, Vt)
-    scale_matrix = np.diag(S)
+    rotation_matrix    = np.dot(U, Vt)
+    scale_matrix       = np.diag(S)
     translation_matrix = np.eye(4)
     translation_matrix[3, :3] = translation
     full_rotation_matrix = np.eye(4)
@@ -640,15 +640,15 @@ def matrix_weighted_rotational(
 
 def matrix_weighted_transformation(
     transformation_matrices: typing.List[np.ndarray],
-    weights: typing.List[float],
-    flatten: bool = False,
+    weights:                 typing.List[float],
+    flatten:                 bool                    = False,
 ) -> np.ndarray:
     """Compute a weighted average of 4x4 transformation matrices.
 
     Mirrors the legacy ``matrix.compute_weighted_transformation``.
     """
     transformation_matrices = np.array(transformation_matrices)
-    weights = np.array(weights)
+    weights                 = np.array(weights)
 
     if len(transformation_matrices) != len(weights):
         raise ValueError(
@@ -657,11 +657,11 @@ def matrix_weighted_transformation(
             f"matrices and weights must be the same length"
         )
 
-    weights_normalized = weights / np.sum(weights)
+    weights_normalized   = weights / np.sum(weights)
 
     weighted_translation = np.zeros((1, 3))
-    rotation_matrices = []
-    weighted_scale = np.zeros((3, 3))
+    rotation_matrices    = []
+    weighted_scale       = np.zeros((3, 3))
 
     for i, matrix in enumerate(transformation_matrices):
         translation_matrix, rotation_matrix, scale_matrix = matrix_decompose(matrix)
@@ -673,7 +673,7 @@ def matrix_weighted_transformation(
     weighted_rotation = matrix_weighted_rotational(
         rotation_matrices, weights_normalized
     )
-    scale_matrix = np.eye(4)
+    scale_matrix  = np.eye(4)
     result_matrix = np.eye(4)
     result_matrix[:3, :3] = weighted_rotation
     scale_matrix[:3, :3] = weighted_scale
@@ -710,7 +710,7 @@ def euler_to_matrix(euler, axes=XYZ):
     from transforms._numba._euler import _euler_to_matrix
 
     euler = _set_dimension(euler, 2)
-    axes = _set_dimension(axes, 1, dtype=np.int32)
+    axes  = _set_dimension(axes, 1, dtype=np.int32)
     euler, axes = _match_depth(euler, axes)
 
     return _euler_to_matrix(euler, axes)
@@ -724,7 +724,7 @@ def euler_to_quaternion(euler, axes=XYZ):
     from transforms._numba._euler import _euler_to_quaternion
 
     euler = _set_dimension(euler, 2)
-    axes = _set_dimension(axes, 1, dtype=np.int32)
+    axes  = _set_dimension(axes, 1, dtype=np.int32)
     euler, axes = _match_depth(euler, axes)
 
     return _euler_to_quaternion(euler, axes)
@@ -746,9 +746,9 @@ def euler_slerp(euler0, euler1, weight=0.5, axes0=XYZ, axes1=XYZ, axes=XYZ):
     euler0 = _set_dimension(euler0, 2)
     euler1 = _set_dimension(euler1, 2)
     weight = _set_dimension(weight, 1)
-    axes0 = _set_dimension(axes0, 1, dtype=np.int32)
-    axes1 = _set_dimension(axes1, 1, dtype=np.int32)
-    axes = _set_dimension(axes, 1, dtype=np.int32)
+    axes0  = _set_dimension(axes0, 1, dtype=np.int32)
+    axes1  = _set_dimension(axes1, 1, dtype=np.int32)
+    axes   = _set_dimension(axes, 1, dtype=np.int32)
 
     euler0, euler1, weight, axes0, axes1, axes = _match_depth(
         euler0, euler1, weight, axes0, axes1, axes
@@ -756,7 +756,7 @@ def euler_slerp(euler0, euler1, weight=0.5, axes0=XYZ, axes1=XYZ, axes=XYZ):
 
     q0 = _euler_to_quaternion(euler0, axes0)
     q1 = _euler_to_quaternion(euler1, axes1)
-    q = _quaternion_slerp(q0, q1, weight)
+    q  = _quaternion_slerp(q0, q1, weight)
 
     return _matrix_to_euler(_quaternion_to_matrix(q), axes)
 
@@ -771,9 +771,9 @@ def euler_reorder(euler, from_axes, to_axes):
     from transforms._numba._euler import _euler_to_matrix
     from transforms._numba._matrix import _matrix_to_euler
 
-    euler = _set_dimension(euler, 2)
+    euler     = _set_dimension(euler, 2)
     from_axes = _set_dimension(from_axes, 1, dtype=np.int32)
-    to_axes = _set_dimension(to_axes, 1, dtype=np.int32)
+    to_axes   = _set_dimension(to_axes, 1, dtype=np.int32)
     euler, from_axes, to_axes = _match_depth(euler, from_axes, to_axes)
 
     M = _euler_to_matrix(euler, from_axes)
@@ -805,13 +805,13 @@ def euler_filter(euler, axes):
     if axes.size and (axes.min() < 0 or axes.max() >= len(MAYA_EA)):
         raise ValueError(f"axes must be in 0..{len(MAYA_EA) - 1}")
 
-    shape = euler.shape
+    shape  = euler.shape
     frames = shape[0]
     if frames < 2 or euler.size == 0:
         return euler.copy()
 
     curves = euler.reshape(frames, -1, 3)
-    count = curves.shape[1]
+    count  = curves.shape[1]
 
     # the axis the flip reflects rather than turns is the middle one of the
     # rotate order, which is what MAYA_EA already stores
@@ -824,14 +824,14 @@ def euler_filter(euler, axes):
         ) from None
 
     middle = MAYA_EA[per_curve][:, 1]
-    rows = np.arange(count)
+    rows   = np.arange(count)
 
-    out = curves.copy()
+    out    = curves.copy()
     for f in range(1, frames):
         previous = out[f - 1]
-        current = curves[f]
+        current  = curves[f]
 
-        flipped = current + np.pi
+        flipped  = current + np.pi
         flipped[rows, middle] = np.pi - current[rows, middle]
 
         # both candidates slide onto the turn nearest the previous frame,
@@ -861,7 +861,7 @@ def axis_angle_to_quaternion(axis, angle=0.0):
     """Convert axis-angle pairs to quaternions.  Backed by ``_axis_angle_to_quaternion``."""
     from transforms._numba._axis import _axis_angle_to_quaternion
 
-    axis = _set_dimension(axis, 2)
+    axis  = _set_dimension(axis, 2)
     angle = _set_dimension(angle, 1)
     axis, angle = _match_depth(axis, angle)
 
@@ -875,7 +875,7 @@ def axis_angle_to_matrix(axis, angle=0.0):
     """
     from transforms._numba._axis import _axis_angle_to_matrix
 
-    axis = _set_dimension(axis, 2)
+    axis  = _set_dimension(axis, 2)
     angle = _set_dimension(angle, 1)
     axis, angle = _match_depth(axis, angle)
 
@@ -890,9 +890,9 @@ def axis_angle_to_euler(axis, angle=0.0, axes=XYZ):
     from transforms._numba._axis import _axis_angle_to_matrix
     from transforms._numba._matrix import _matrix_to_euler
 
-    axis = _set_dimension(axis, 2)
+    axis  = _set_dimension(axis, 2)
     angle = _set_dimension(angle, 1)
-    axes = _set_dimension(axes, 1, dtype=np.int32)
+    axes  = _set_dimension(axes, 1, dtype=np.int32)
     axis, angle, axes = _match_depth(axis, angle, axes)
 
     M = _axis_angle_to_matrix(axis, angle)
@@ -911,10 +911,10 @@ def vector_to_matrix(vector0, vector1, aim_axis=X, up_axis=Y):
     """
     from transforms._numba._vector import _vector_to_matrix
 
-    vector0 = _set_dimension(vector0, 2)
-    vector1 = _set_dimension(vector1, 2)
+    vector0  = _set_dimension(vector0, 2)
+    vector1  = _set_dimension(vector1, 2)
     aim_axis = _set_dimension(aim_axis, 1, dtype=np.int32) % 3
-    up_axis = _set_dimension(up_axis, 1, dtype=np.int32) % 3
+    up_axis  = _set_dimension(up_axis, 1, dtype=np.int32) % 3
     vector0, vector1, aim_axis, up_axis = _match_depth(
         vector0, vector1, aim_axis, up_axis
     )
@@ -930,10 +930,10 @@ def vector_to_quaternion(vector0, vector1, aim_axis=X, up_axis=Y):
     from transforms._numba._matrix import _matrix_to_quaternion
     from transforms._numba._vector import _vector_to_matrix
 
-    vector0 = _set_dimension(vector0, 2)
-    vector1 = _set_dimension(vector1, 2)
+    vector0  = _set_dimension(vector0, 2)
+    vector1  = _set_dimension(vector1, 2)
     aim_axis = _set_dimension(aim_axis, 1, dtype=np.int32) % 3
-    up_axis = _set_dimension(up_axis, 1, dtype=np.int32) % 3
+    up_axis  = _set_dimension(up_axis, 1, dtype=np.int32) % 3
     vector0, vector1, aim_axis, up_axis = _match_depth(
         vector0, vector1, aim_axis, up_axis
     )
@@ -950,11 +950,11 @@ def vector_to_euler(vector0, vector1, aim_axis=X, up_axis=Y, axes=XYZ):
     from transforms._numba._matrix import _matrix_to_euler
     from transforms._numba._vector import _vector_to_matrix
 
-    vector0 = _set_dimension(vector0, 2)
-    vector1 = _set_dimension(vector1, 2)
+    vector0  = _set_dimension(vector0, 2)
+    vector1  = _set_dimension(vector1, 2)
     aim_axis = _set_dimension(aim_axis, 1, dtype=np.int32) % 3
-    up_axis = _set_dimension(up_axis, 1, dtype=np.int32) % 3
-    axes = _set_dimension(axes, 1, dtype=np.int32)
+    up_axis  = _set_dimension(up_axis, 1, dtype=np.int32) % 3
+    axes     = _set_dimension(axes, 1, dtype=np.int32)
     vector0, vector1, aim_axis, up_axis, axes = _match_depth(
         vector0, vector1, aim_axis, up_axis, axes
     )
@@ -1011,7 +1011,7 @@ def vector_slerp(vector0, vector1, weight=0.5):
 
     vector0 = _set_dimension(vector0, 2)
     vector1 = _set_dimension(vector1, 2)
-    weight = _set_dimension(weight, 1)
+    weight  = _set_dimension(weight, 1)
     vector0, vector1, weight = _match_depth(vector0, vector1, weight)
 
     return _vector_slerp(vector0, vector1, weight)
@@ -1026,7 +1026,7 @@ def vector_lerp(vector0, vector1, weight=0.5):
 
     vector0 = _set_dimension(vector0, 2)
     vector1 = _set_dimension(vector1, 2)
-    weight = _set_dimension(weight, 1)
+    weight  = _set_dimension(weight, 1)
     vector0, vector1, weight = _match_depth(vector0, vector1, weight)
 
     return np.nan_to_num(_vector_lerp(vector0, vector1, weight))
@@ -1073,7 +1073,7 @@ def vector_arc_to_euler(vector0, vector1, axes=XYZ):
 
     vector0 = _set_dimension(vector0, 2)
     vector1 = _set_dimension(vector1, 2)
-    axes = _set_dimension(axes, 1, dtype=np.int32)
+    axes    = _set_dimension(axes, 1, dtype=np.int32)
     vector0, vector1, axes = _match_depth(vector0, vector1, axes)
 
     return _matrix_to_euler(

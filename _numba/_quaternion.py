@@ -28,7 +28,7 @@ def _quaternion_slerp(quat0, quat1, weight):
             )
 
         else:
-            halfTheta = acos(cosHalfTheta)
+            halfTheta    = acos(cosHalfTheta)
             sinHalfTheta = (1.0 - cosHalfTheta * cosHalfTheta) ** 0.5
 
             if abs(sinHalfTheta) < EPSILON:
@@ -263,13 +263,13 @@ def _quaternion_nlerp(quat0, quat1, weight):
     quat = np.empty((quat0.shape[0], 4), dtype=quat0.dtype)
 
     for i in prange(quat0.shape[0]):
-        a = 1.0 - weight[i]
-        b = weight[i]
+        a   = 1.0 - weight[i]
+        b   = weight[i]
 
-        x = quat0[i, 0] * a + quat1[i, 0] * b
-        y = quat0[i, 1] * a + quat1[i, 1] * b
-        z = quat0[i, 2] * a + quat1[i, 2] * b
-        w = quat0[i, 3] * a + quat1[i, 3] * b
+        x   = quat0[i, 0] * a + quat1[i, 0] * b
+        y   = quat0[i, 1] * a + quat1[i, 1] * b
+        z   = quat0[i, 2] * a + quat1[i, 2] * b
+        w   = quat0[i, 3] * a + quat1[i, 3] * b
 
         mag = (x * x + y * y + z * z + w * w) ** 0.5
         if mag < EPSILON:

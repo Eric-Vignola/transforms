@@ -4,8 +4,8 @@ import numpy as np
 from numba import njit, prange
 
 EPSILON     = np.finfo(np.float32).eps
-EULER_SAFE  = np.array([0, 1, 2, 0], dtype=np.intp)
-EULER_NEXT  = np.array([1, 2, 0, 1], dtype=np.intp)
+EULER_SAFE  = np.array([0, 1, 2, 0],          dtype=np.intp)
+EULER_NEXT  = np.array([1, 2, 0, 1],          dtype=np.intp)
 EULER_ORDER = np.array([0, 8, 16, 4, 12, 20], dtype=np.intp)
 MAYA_EA = np.array(
     [[0, 1, 2], [1, 2, 0], [2, 0, 1], [0, 2, 1], [1, 0, 2], [2, 1, 0]], dtype=np.intp

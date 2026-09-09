@@ -137,8 +137,8 @@ Rz               = euler_to_matrix([0.0, 0.0, np.radians(90)], XYZ)
 
 rotate_then_move = matrix_multiply(Rz, T)
 move_then_rotate = matrix_multiply(T, Rz)
-print(matrix_point_multiply([1.0, 0.0, 0.0], rotate_then_move))   # [[10, 21, 30]]
-print(matrix_point_multiply([1.0, 0.0, 0.0], move_then_rotate))   # [[-20, 11, 30]]
+print(matrix_point_multiply([1.0, 0.0, 0.0], rotate_then_move))  # [[10, 21, 30]]
+print(matrix_point_multiply([1.0, 0.0, 0.0], move_then_rotate))  # [[-20, 11, 30]]
 
 assert np.allclose(matrix_multiply(mats, matrix_inverse(mats)), matrix_identity(4))
 assert np.allclose(matrix_transpose(mats), matrix_inverse(mats))  # true for pure rotations
@@ -207,8 +207,8 @@ A[0, 3, :3] = [10.0, 0.0, 0.0]
 B = matrix_identity(1)
 B[0, 3, :3] = [20.0, 0.0, 0.0]
 
-print(matrix_slerp(A, B, 0.5)[0, 3, :3])         # [0, 0, 0] -- dropped
-print(matrix_interpolate(A, B, 0.5)[0, 3, :3])   # [15, 0, 0]
+print(matrix_slerp(A, B, 0.5)[0, 3, :3])        # [0, 0, 0] -- dropped
+print(matrix_interpolate(A, B, 0.5)[0, 3, :3])  # [15, 0, 0]
 ```
 
 Per-row weights, and `shortest=False` to take the long way round:
@@ -233,8 +233,8 @@ Any function taking a matrix also accepts a flat 16-float list.
 from transforms import matrix_flatten, matrix_to_quaternion
 
 flat = matrix_flatten([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
-print(flat)                                   # 16 floats, Maya order
-print(matrix_to_quaternion(flat))             # [[0, 0, 0, 1]]
+print(flat)                        # 16 floats, Maya order
+print(matrix_to_quaternion(flat))  # [[0, 0, 0, 1]]
 assert matrix_flatten(flat) is flat           # already flat -> returned as-is
 ```
 
@@ -274,8 +274,8 @@ print(matrix_weighted_rotational([R0, R1], [0.5, 0.5]))       # 3x3, halfway
 M0 = matrix_identity(1)[0]
 M1 = euler_to_matrix([0.0, 0.0, np.radians(90)], XYZ)[0].copy()
 M1[3, :3] = [10.0, 0.0, 0.0]
-print(matrix_weighted_transformation([M0, M1], [1.0, 1.0]))   # weights normalised for you
-print(len(matrix_weighted_transformation([M0, M1], [1.0, 1.0], flatten=True)))   # 16
+print(matrix_weighted_transformation([M0, M1], [1.0, 1.0]))                     # weights normalised for you
+print(len(matrix_weighted_transformation([M0, M1], [1.0, 1.0], flatten=True)))  # 16
 ```
 
 ---
@@ -295,8 +295,8 @@ from transforms import (
 )
 
 Q = quaternion_random(4, seed=12345)
-print(quaternion_to_matrix(Q).shape)                 # (4, 4, 4)
-print(np.degrees(quaternion_to_euler(Q, XYZ)))       # (4, 3) degrees for reading
+print(quaternion_to_matrix(Q).shape)            # (4, 4, 4)
+print(np.degrees(quaternion_to_euler(Q, XYZ)))  # (4, 3) degrees for reading
 assert np.allclose(quaternion_to_matrix(Q), euler_to_matrix(quaternion_to_euler(Q, XYZ), XYZ))
 ```
 
@@ -359,8 +359,8 @@ q0 = quaternion_random(1, seed=1)
 q1 = quaternion_random(1, seed=2)
 
 print(quaternion_slerp(q0, q1, 0.25))
-print(quaternion_slerp(q0, q1, [0.0, 0.5, 1.0]).shape)          # (3, 4)
-print(quaternion_slerp(q0, q1, 0.5, shortest=False))            # long way round
+print(quaternion_slerp(q0, q1, [0.0, 0.5, 1.0]).shape)  # (3, 4)
+print(quaternion_slerp(q0, q1, 0.5, shortest=False))    # long way round
 ```
 
 ---
@@ -449,8 +449,8 @@ import numpy as np
 from transforms import XYZ, euler_to_matrix, euler_to_quaternion
 
 ea = np.radians([[10.0, 20.0, 30.0]])
-print(euler_to_matrix(ea, XYZ).shape)            # (1, 4, 4)
-print(euler_to_quaternion(ea, XYZ))              # (1, 4)
+print(euler_to_matrix(ea, XYZ).shape)  # (1, 4, 4)
+print(euler_to_quaternion(ea, XYZ))    # (1, 4)
 ```
 
 ### Reorder
@@ -722,8 +722,8 @@ return value is always batched:
 import numpy as np
 from transforms import matrix_to_quaternion, vector_normalize
 
-print(vector_normalize([1.0, 2.0, 3.0]).shape)            # (1, 3), not (3,)
-print(matrix_to_quaternion(np.eye(4)).shape)              # (1, 4)
+print(vector_normalize([1.0, 2.0, 3.0]).shape)  # (1, 3), not (3,)
+print(matrix_to_quaternion(np.eye(4)).shape)    # (1, 4)
 ```
 
 Any other length is a mistake and raises. Nothing is padded, recycled or

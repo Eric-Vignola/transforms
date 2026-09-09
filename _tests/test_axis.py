@@ -144,9 +144,9 @@ class TestAxis(unittest.TestCase):
         self.assertEqual(YXZ, 4)
         self.assertEqual(ZYX, 5)
 
-        self.assertEqual(X, 0)
-        self.assertEqual(Y, 1)
-        self.assertEqual(Z, 2)
+        self.assertEqual(X,   0)
+        self.assertEqual(Y,   1)
+        self.assertEqual(Z,   2)
 
     def test_angle_to_quaternion_180_degrees(self):
         """Test axis_angle_to_quaternion with 180 degree rotation"""

@@ -367,11 +367,11 @@ print(quaternion_slerp(q0, q1, 0.5, shortest=False))            # long way round
 
 ## Quaternion calculus and splines
 
-These five live in `transforms.main` only — they are **not** re-exported
-from the package root.
+Log / exp, nlerp and the squad spline. Less common than `quaternion_slerp`,
+so they get their own section.
 
 ```python
-from transforms.main import (
+from transforms import (
     quaternion_exp,
     quaternion_intermediate,
     quaternion_log,
@@ -388,7 +388,7 @@ it back.
 ```python
 import numpy as np
 from transforms import quaternion_random, quaternion_to_matrix
-from transforms.main import quaternion_exp, quaternion_log
+from transforms import quaternion_exp, quaternion_log
 
 Q = quaternion_random(4, seed=12345)
 
@@ -405,7 +405,7 @@ constant-angular-velocity in between.
 ```python
 import numpy as np
 from transforms import quaternion_random, quaternion_slerp
-from transforms.main import quaternion_nlerp
+from transforms import quaternion_nlerp
 
 q0 = quaternion_random(1, seed=1)
 q1 = quaternion_random(1, seed=2)
@@ -425,7 +425,7 @@ segment to `quaternion_squad`.
 ```python
 import numpy as np
 from transforms import quaternion_random
-from transforms.main import quaternion_intermediate, quaternion_squad
+from transforms import quaternion_intermediate, quaternion_squad
 
 keys = quaternion_random(4, seed=11)
 

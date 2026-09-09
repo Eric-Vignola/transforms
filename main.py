@@ -14,7 +14,7 @@ Old API (the split ``vector`` / ``axis`` / ``euler`` / ``matrix`` /
 
 New API (this module)::
 
-    from transforms.main import (
+    from transforms import (
         quaternion_to_matrix,
         matrix_to_quaternion,
         matrix_point_multiply,
@@ -1167,6 +1167,7 @@ __all__ = [
     "euler_slerp",
     "euler_reorder",
     "euler_random",
+    "euler_filter",
     # axis / angle
     "axis_angle_to_quaternion",
     "axis_angle_to_matrix",

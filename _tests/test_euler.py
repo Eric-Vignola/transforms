@@ -28,8 +28,8 @@ def allclose(x, y, atol=EPSILON):
 
 class TestEuler(unittest.TestCase):
     def testToEuler(self):
-        ea = euler_random(10**6, RANDOM_SEED)
-        ea_ = euler_reorder(ea, 0, 3)  # change to rotate order to 3
+        ea  = euler_random(10**6, RANDOM_SEED)
+        ea_ = euler_reorder(ea, 0, 3)   # change to rotate order to 3
         ea_ = euler_reorder(ea_, 3, 0)  # bring back to rotate order to 0
 
         self.assertEqual(
@@ -37,15 +37,15 @@ class TestEuler(unittest.TestCase):
         )
 
     def testToMatrix(self):
-        ea = euler_random(10**6, RANDOM_SEED)
-        M = euler_to_matrix(ea, 0)
+        ea  = euler_random(10**6, RANDOM_SEED)
+        M   = euler_to_matrix(ea, 0)
         ea_ = matrix_to_euler(M, 0)
 
         self.assertEqual(allclose(euler_to_matrix(ea), euler_to_matrix(ea_)), True)
 
     def testToQuaternion(self):
-        ea = euler_random(10**6, RANDOM_SEED)
-        Q = euler_to_quaternion(ea, 0)
+        ea  = euler_random(10**6, RANDOM_SEED)
+        Q   = euler_to_quaternion(ea, 0)
         ea_ = quaternion_to_euler(Q, 0)
 
         self.assertEqual(allclose(euler_to_matrix(ea), euler_to_matrix(ea_)), True)
@@ -53,7 +53,7 @@ class TestEuler(unittest.TestCase):
     def testSlerp(self):
         ea0 = euler_random(10**6, RANDOM_SEED)
         ea1 = euler_random(10**6, RANDOM_SEED)
-        w = np.random.random(10**6)
+        w   = np.random.random(10**6)
 
         # slerp ea0 to ea1
         forward = euler_slerp(ea0, ea1, w)
@@ -102,7 +102,7 @@ class TestEulerFilter(unittest.TestCase):
 
     def testReflectingYAlwaysBreaksFourOfTheOrders(self):
         """guards the table: y is only the middle axis of xyz and zyx"""
-        ea = euler_random(1000, RANDOM_SEED)
+        ea    = euler_random(1000, RANDOM_SEED)
         naive = np.array(ea) + np.pi
         naive[..., 1] = np.pi - np.array(ea)[..., 1]
         for axes in range(6):

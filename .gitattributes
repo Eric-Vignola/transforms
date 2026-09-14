@@ -1,0 +1,17 @@
+# Linux (LF) newlines, in every file, on every machine.
+#
+# Git for Windows ships core.autocrlf=true in its SYSTEM config. That leaves
+# the committed blobs LF but hands the WORKING COPY CRLF, so a checkout here
+# reads byte-different from the same commit on Linux or macOS while
+# `git status` still reports clean. That is exactly how a comparison of this
+# folder against its GitHub copy came back showing every line of every file
+# changed when the content was in fact identical.
+#
+# Declared here, the rule travels with the repository and no longer depends on
+# how a given machine happens to be configured.
+#
+# Every tracked file is text (*.py, *.md, LICENSE, .gitignore) and every blob
+# is ALREADY stored LF, verified byte-exactly: `git add --renormalize .` under
+# this rule produces no index change, so nothing below rewrites history.
+
+* text=auto eol=lf

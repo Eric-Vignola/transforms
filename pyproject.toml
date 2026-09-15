@@ -8,8 +8,8 @@
 # top-level modules and every absolute import would fail.
 #
 # This file exists so `pip install git+https://github.com/Eric-Vignola/transforms`
-# works. cgmath declares exactly that as a dependency, and a repository with no
-# build metadata cannot be installed from a URL at all.
+# works: a repository with no build metadata cannot be installed from a URL at
+# all.
 
 [build-system]
 requires = ["setuptools>=64"]
